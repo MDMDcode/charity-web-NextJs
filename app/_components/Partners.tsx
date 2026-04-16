@@ -4,6 +4,9 @@ import React, { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination, Navigation } from 'swiper/modules';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
+import apiClient from "@/app/lib/api"; 
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
 
 import 'swiper/css';
 import 'swiper/css/pagination';
@@ -11,13 +14,22 @@ import 'swiper/css/navigation';
 
 const PartnersFinal = ({ data }: { data?: any }) => {
     const [partners, setPartners] = useState<any[]>([]);
-    const API_BASE_URL = 'http://127.0.0.1:8000';
 
-    useEffect(() => {
-        fetch(`${API_BASE_URL}/api/v1/partners?t=${Date.now()}`)
-            .then(res => res.json())
-            .then(res => setPartners(res?.data?.items || res?.data || []))
-            .catch(err => console.error(err));
+useEffect(() => {
+        // نستخدم apiClient وليس fetch
+        apiClient.get('partners', {
+            params: { t: Date.now() } // منع الكاش بطريقة Axios
+        })
+        .then(response => {
+            // ملاحظة: Axios يضع النتيجة في response.data
+            // وإذا كان Laravel Resource يضعها في data، تصبح النتيجة في response.data.data
+            const res = response.data;
+            const dataArray = res?.data?.items || res?.data || [];
+            setPartners(dataArray);
+        })
+        .catch(err => {
+            console.error("Partners Fetch Error:", err);
+        });
     }, []);
 
     if (partners.length === 0) return null;

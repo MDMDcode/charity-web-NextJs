@@ -3,14 +3,16 @@ import { FaUser, FaShoppingCart } from "react-icons/fa";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import apiClient from "@/app/lib/api"; 
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export default function TopHeader() {
     const [logo, setLogo] = useState<string | null>(null);
 
 useEffect(() => {
-    axios.get(`${BASE_URL}/api/v1/settings`)
+    apiClient(`/settings`)
         .then((res) => {
             const logoPath = res.data?.data?.site_logo?.original;
             console.log("Logo Path:", logoPath);

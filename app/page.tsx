@@ -44,13 +44,11 @@ export default async function Home() {
 // ابحث عن الجزء الذي يعالج قسم الفيديو داخل الـ Loop في Home.tsx
 if (section.section_key === 'videos') {
     return (
-      <GalleryVideosCarousel 
-        key={section.id}
-        // هنا نمرر اسم القسم القادم من الهوم بيج (مثلاً section.name)
-        title={section.name || "معرض الفيديو"} 
-        videos={[]} 
-        links={[]} 
-      />
+        <GalleryVideosCarousel 
+            key={section.id} 
+            // تمرير الـ section بالكامل ليقرأ المكون منه الاسم والبيانات
+            data={section} 
+        />
     );
 }
 

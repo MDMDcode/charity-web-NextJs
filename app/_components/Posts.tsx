@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination, Navigation, FreeMode } from 'swiper/modules';
 import { ChevronRight, ChevronLeft, Calendar, ArrowLeft } from 'lucide-react';
+import apiClient from "@/app/lib/api"; 
 
 // Import Swiper styles
 import 'swiper/css';
@@ -24,15 +25,21 @@ const NewsSection = ({ data }: { data?: any }) => {
     const [posts, setPosts] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
+useEffect(() => {
         const fetchPosts = async () => {
             try {
-                const response = await fetch(`${API_BASE_URL}/api/v1/posts?t=${Date.now()}`, {
-                    headers: { 'Accept': 'application/json' },
-                    cache: 'no-store'
+                // نستخدم apiClient.get مع اسم الـ Route فقط
+                // أضفنا الباراميتر t لمنع الكاش كما في الكود الأصلي
+                const response = await apiClient.get(`posts`, {
+                    params: { t: Date.now() }
                 });
-                const res = await response.json();
+
+                // في Axios، البيانات المستلمة تكون دائماً داخل response.data
+                const res = response.data;
+                
+                // استخراج المصفوفة حسب هيكلة الـ API (نتحقق من كل الاحتمالات)
                 const dataArray = res?.data?.items || res?.data?.data || res?.data || [];
+                
                 setPosts(dataArray);
             } catch (err) {
                 console.error("Fetch error:", err);
@@ -40,6 +47,7 @@ const NewsSection = ({ data }: { data?: any }) => {
                 setLoading(false);
             }
         };
+        
         fetchPosts();
     }, []);
 

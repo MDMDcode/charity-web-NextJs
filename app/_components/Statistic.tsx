@@ -2,19 +2,26 @@
 
 import React, { useEffect, useState } from 'react';
 import * as IconsFA from "react-icons/fa6";
+import apiClient from "@/app/lib/api"; 
 
 const StatisticsSection = ({ data }: { data?: any }) => {
     const [stats, setStats] = useState<any[]>([]);
 
-    useEffect(() => {
+useEffect(() => {
         const fetchStats = async () => {
             try {
-                const response = await fetch(`http://127.0.0.1:8000/api/v1/statistics?t=${Date.now()}`, {
-                    headers: { 'Accept': 'application/json' },
-                    cache: 'no-store'
+                // استخدام apiClient مباشرة
+                // أضفنا الباراميتر t للمنع من الكاش كما كنتِ تفعلين
+                const response = await apiClient.get(`statistics`, {
+                    params: { t: Date.now() }
                 });
-                const res = await response.json();
+
+                // في Axios البيانات موجودة في response.data
+                const res = response.data;
+                
+                // استخراج المصفوفة بناءً على هيكلة الـ API الخاص بكِ
                 const dataArray = res?.data?.items || res?.data || [];
+                
                 setStats(dataArray);
             } catch (err) {
                 console.error("Fetch error:", err);

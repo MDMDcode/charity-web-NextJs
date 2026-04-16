@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { CheckCircle2, ShieldCheck, Loader2, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
+import apiClient from "@/app/lib/api"; 
 
 export default function CheckoutPage() {
   const searchParams = useSearchParams();
@@ -32,10 +33,9 @@ export default function CheckoutPage() {
 
     setLoading(true);
     try {
-      const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
       
       // إرسال POST الحقيقي
-      await axios.post(`${BASE_URL}/api/v1/donations`, {
+      await apiClient.post(`donations`, {
         donor_name: form.donor_name || "فاعل خير",
         donor_phone: form.donor_phone,
         items: cartItems.map(item => ({

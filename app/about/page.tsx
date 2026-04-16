@@ -2,6 +2,7 @@
 
 import axios from "axios";
 import { useEffect, useState } from "react";
+import apiClient from "@/app/lib/api"; 
 
  export default function AlSabrPage() {
 
@@ -20,7 +21,7 @@ import { useEffect, useState } from "react";
   useEffect( function(){
     async function fetchData() {
       try{
-        const res = await axios.get("http://localhost:8000/api/v1/about" , {
+        const res = await apiClient.get("about" , {
         headers : {Accept: "application/json"}
       })
       setForm(res.data.data.data)

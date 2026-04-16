@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
+import apiClient from "@/app/lib/api"; 
 
 export default function DynamicPage() {
     const params = useParams();
@@ -10,12 +11,27 @@ export default function DynamicPage() {
     const [lbOpen, setLbOpen] = useState(false);
     const [lbIdx, setLbIdx] = useState(0);
 
-    useEffect(() => {
+useEffect(() => {
         if (!slug) return;
-        fetch(`http://127.0.0.1:8000/api/v1/pages/${slug}`)
-            .then(r => r.json())
-            .then(r => { setPage(r.data); setLoading(false); })
-            .catch(() => setLoading(false));
+
+        setLoading(true); // لضمان ظهور حالة التحميل عند تغيير الـ slug
+
+        apiClient.get(`pages/${slug}`)
+            .then(response => {
+                // في Axios، البيانات جاهزة في response.data
+                // وبما أن Laravel يرجعها داخل data، نصل إليها عبر response.data.data
+                if (response.data && response.data.data) {
+                    setPage(response.data.data);
+                } else {
+                    setPage(response.data); // احتياطاً إذا كانت البيانات غير مغلفة
+                }
+            })
+            .catch((err) => {
+                console.error("Page fetch error:", err);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
     }, [slug]);
 
     const images = page?.images || [];

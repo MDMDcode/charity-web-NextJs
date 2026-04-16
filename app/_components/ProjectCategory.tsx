@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import ProjectCard from "@/app/_components/ProjectCard";
+import apiClient from "@/app/lib/api"; 
 
 // ... نفس الواجهات (Interfaces) دون تغيير
 interface Project {
@@ -22,7 +23,6 @@ interface ProjectCategory {
   projects?: Project[];
 }
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
 export default function ProjectCategoriesSection() {
   const [categories, setCategories] = useState<ProjectCategory[]>([]);
@@ -30,33 +30,47 @@ export default function ProjectCategoriesSection() {
   const [loading, setLoading] = useState(true);
 
   // جلب البيانات
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const res = await fetch(`${BASE_URL}/api/v1/project-categories`);
-        const data = await res.json();
-        const cats: ProjectCategory[] = data?.data?.items || [];
+useEffect(() => {
+  async function fetchData() {
+    try {
+      // 1. جلب قائمة التصنيفات
+      const response = await apiClient(`project-categories`);
+      
+      // Axios يضع البيانات في response.data
+      const data = response.data;
+      const cats: ProjectCategory[] = data?.data?.items || data?.data || [];
 
-        const withProjects = await Promise.all(
-          cats.map(async (cat) => {
-            const res2 = await fetch(`${BASE_URL}/api/v1/project-categories/${cat.slug}`);
-            const data2 = await res2.json();
-            return data2?.data || cat;
-          })
-        );
+      // 2. جلب تفاصيل المشاريع لكل تصنيف بشكل متوازي
+      const withProjects = await Promise.all(
+        cats.map(async (cat) => {
+          try {
+            const res2 = await apiClient.get(`project-categories/${cat.slug}`);
+            // نأخذ البيانات الجديدة أو نبقي على القديمة في حال فشل طلب فرعي
+            return res2.data?.data || cat;
+          } catch (err) {
+            console.error(`Error fetching category ${cat.slug}:`, err);
+            return cat;
+          }
+        })
+      );
 
-        // تصفية التصنيفات التي تحتوي على مشاريع فقط
-        const filtered = withProjects.filter(c => c.projects && c.projects.length > 0);
-        setCategories(filtered);
-        if (filtered.length > 0) setActiveTab(filtered[0].id); // تفعيل أول تبويب تلقائياً
-      } catch (error) {
-        console.error("Error fetching projects:", error);
-      } finally {
-        setLoading(false);
+      // 3. تصفية التصنيفات التي تحتوي على مشاريع فقط
+      const filtered = withProjects.filter(c => c.projects && c.projects.length > 0);
+      
+      setCategories(filtered);
+      
+      if (filtered.length > 0) {
+        setActiveTab(filtered[0].id); // تفعيل أول تبويب تلقائياً
       }
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+    } finally {
+      setLoading(false);
     }
-    fetchData();
-  }, []);
+  }
+  
+  fetchData();
+}, []);
 
   if (loading) return <div className="py-20 text-center">جاري التحميل...</div>;
   if (categories.length === 0) return null;

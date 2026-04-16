@@ -3,28 +3,34 @@
 import React, { useEffect, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import * as IconsFA from "react-icons/fa6";
+import apiClient from '@/app/lib/api'
+import axios from 'axios';
 
 const NavBar = () => {
     const [menuItems, setMenuItems] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchMenu = async () => {
-            try {
-                const response = await fetch(`http://127.0.0.1:8000/api/v1/menu-items?location=header&t=${Date.now()}`, {
-                    headers: { 'Accept': 'application/json' },
-                    cache: 'no-store'
-                });
-                const res = await response.json();
-                setMenuItems(res?.data || []);
-            } catch (err) {
-                console.error("Fetch error:", err);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchMenu();
-    }, []);
+useEffect(() => {
+    const fetchMenu = async () => {
+        try {
+            const response = await apiClient.get("/menu-items", {
+                params: { 
+                    location: 'header',
+                    t: Date.now() // هذه تغنيك عن cache: 'no-store' لأنها تجعل الرابط متغيراً دائماً
+                }
+                // هنا حذفنا سطر cache لأنه غير مدعوم في Axios
+            });
+
+            setMenuItems(response.data?.data || []);
+        } catch (err) {
+            console.error("Fetch error:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    fetchMenu();
+}, []);
 
     const DynamicIcon = ({ iconName, className }: { iconName: string; className?: string }) => {
         if (!iconName) return null;

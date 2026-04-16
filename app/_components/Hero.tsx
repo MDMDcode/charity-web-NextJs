@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import manus from 'manus';
+import apiClient from "@/app/lib/api"; 
 
 interface HeroSlide {
   id: string;
@@ -14,13 +15,20 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 async function getSlides(): Promise<HeroSlide[]> {
   try {
-    const res = await fetch(`${BASE_URL}/api/v1/hero-slides`, {
-      next: { revalidate: 60 },
+    // في Axios، لا نستخدم res.json() ولا نمرر next: { revalidate } بهذا الشكل
+    const response = await apiClient.get(`hero-slides`, {
+      // إذا أردتِ منع الكاش أو تحديثه، نستخدم التوقيت كباراميتر
+      params: { t: Date.now() },
       headers: { Accept: 'application/json' },
     });
-    const data = await res.json();
-    return data?.data?.items || data?.data || [];
-  } catch {
+
+    // Axios يضع البيانات في response.data تلقائياً
+    const data = response.data;
+
+    // استخراج المصفوفة بناءً على هيكلة الـ API (غالباً data.data في Laravel)
+    return data?.data?.items || data?.data || data || [];
+  } catch (error) {
+    console.error("Error fetching hero slides:", error);
     return [];
   }
 }

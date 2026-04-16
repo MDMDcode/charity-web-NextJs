@@ -2,6 +2,7 @@
 import axios from 'axios';
 import Link from 'next/link';
 import React, { useState } from 'react'
+import apiClient from "@/app/lib/api"; 
 
 const Contact = () => {
 
@@ -22,7 +23,7 @@ const Contact = () => {
 
  const handleForm = async function(e : React.SubmitEvent) {
   e.preventDefault()
-    const res = await axios.post("http://127.0.0.1:8000/api/v1/contact" , Form ,  { 
+    const res = await apiClient.post("contact" , Form ,  { 
     headers : {
       Accept : "application/json" ,
       "Content-Type" : "application/json"

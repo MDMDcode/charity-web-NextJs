@@ -1,6 +1,7 @@
 "use client" ;
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import apiClient from "@/app/lib/api"; 
 
 // استيراد الأيقونات اللازمة
 import { FaPhoneAlt, FaFacebookSquare, FaMobileAlt, FaEnvelope, FaMapMarkerAlt, FaWhatsapp, FaTiktok, FaLinkedinIn, FaYoutube, FaInstagram,  FaChevronRight } from 'react-icons/fa';
@@ -9,7 +10,7 @@ const Footer = () => {
     const [settings, setSettings] = useState<any>(null);
 
     useEffect(() => {
-        axios.get("http://localhost:8000/api/v1/settings")
+        apiClient.get("settings")
             .then((res) => setSettings(res.data?.data))
             .catch((err) => console.error(err));
     }, []);

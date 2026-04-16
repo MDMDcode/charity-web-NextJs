@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay, EffectFade } from 'swiper/modules';
+import apiClient from "@/app/lib/api"; 
 
 // استيراد مكتبات Swiper الأساسية
 import 'swiper/css';
@@ -19,13 +20,18 @@ const PhotoGallery = ({ data }: { data?: any }) => {
 useEffect(() => {
     const fetchGalleries = async () => {
         try {
-            const response = await fetch(`${API_BASE_URL}/api/v1/galleries`);
-            if (response.ok) {
-                const res = await response.json();
+            // استخدام apiClient مباشرة مع المسار الصحيح
+            const response = await apiClient.get(`galleries`);
+            
+            // في Axios، البيانات موجودة دائماً داخل response.data
+            if (response && response.data) {
+                const res = response.data;
                 
-                // التعديل هنا: تصفية الألبومات التي تحتوي على صور فقط
-                // واستبعاد أي ألبوم يحتوي على روابط فيديو (links) أو تم وسمه كفيديو
-                const onlyPhotoAlbums = res.data?.filter((album: any) => {
+                // التعديل: تصفية الألبومات التي تحتوي على صور فقط واستبعاد الفيديوهات
+                // نتحقق من res.data لأن Laravel Resource يغلف المصفوفة عادةً
+                const sourceData = res.data || res;
+
+                const onlyPhotoAlbums = sourceData?.filter((album: any) => {
                     // نتحقق أن الألبوم يحتوي على صور وليس به روابط يوتيوب
                     const hasImages = album.images && album.images.length > 0;
                     const hasNoVideoLinks = !album.links || album.links.length === 0;
