@@ -1,13 +1,13 @@
 "use client";
 
 import { useSearchParams } from 'next/navigation';
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { CheckCircle2, ShieldCheck, Loader2, ChevronRight } from 'lucide-react';
+import { useState, useEffect, Suspense } from 'react'; // أضفنا Suspense هنا
+import { CheckCircle2, ShieldCheck, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import apiClient from "@/app/lib/api"; 
 
-export default function CheckoutPage() {
+// 1. المكون الذي يحتوي على المنطق (Logic)
+function CheckoutContent() {
   const searchParams = useSearchParams();
   const amountFromUrl = searchParams.get('amount') || "0";
   
@@ -16,13 +16,11 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  // جلب السلة والتأكد من البيانات
   useEffect(() => {
     const data = localStorage.getItem("tmt_cart");
     if (data) {
       const parsedData = JSON.parse(data);
       setCartItems(parsedData);
-      console.log("المشاريع المحملة:", parsedData); // للتأكد في الكونسول
     }
   }, []);
 
@@ -33,8 +31,6 @@ export default function CheckoutPage() {
 
     setLoading(true);
     try {
-      
-      // إرسال POST الحقيقي
       await apiClient.post(`donations`, {
         donor_name: form.donor_name || "فاعل خير",
         donor_phone: form.donor_phone,
@@ -80,13 +76,12 @@ export default function CheckoutPage() {
           </form>
         </div>
 
-        {/* ملخص السلة مع الصور */}
+        {/* ملخص السلة */}
         <div className="lg:col-span-5 bg-white p-6 rounded-3xl border shadow-sm h-fit">
           <h2 className="font-bold mb-4 border-b pb-2">محتويات السلة</h2>
           <div className="space-y-4">
             {cartItems.length > 0 ? cartItems.map((item, index) => (
               <div key={index} className="flex items-center gap-4 bg-gray-50 p-3 rounded-2xl">
-                {/* عرض الصورة هنا */}
                 <div className="w-16 h-16 rounded-xl overflow-hidden bg-gray-200">
                   <img src={item.image} alt="" className="w-full h-full object-cover" />
                 </div>
@@ -101,6 +96,19 @@ export default function CheckoutPage() {
 
       </div>
     </main>
+  );
+}
+
+// 2. المكون الرئيسي الذي يصدر الصفحة (Export Default)
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={
+        <div className="min-h-screen flex items-center justify-center">
+            <Loader2 className="animate-spin text-[#009689]" size={40} />
+        </div>
+    }>
+      <CheckoutContent />
+    </Suspense>
   );
 }
 
