@@ -1,7 +1,7 @@
 "use client" ;
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import apiClient from "@/app/lib/api"; 
+import apiClient from "../lib/api";
 
 // استيراد الأيقونات اللازمة
 import { FaPhoneAlt, FaFacebookSquare, FaMobileAlt, FaEnvelope, FaMapMarkerAlt, FaWhatsapp, FaTiktok, FaLinkedinIn, FaYoutube, FaInstagram,  FaChevronRight } from 'react-icons/fa';

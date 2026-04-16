@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import ProjectCard from "@/app/_components/ProjectCard";
-import apiClient from "@/app/lib/api"; 
+import apiClient from "../lib/api";
 
 // ... نفس الواجهات (Interfaces) دون تغيير
 interface Project {

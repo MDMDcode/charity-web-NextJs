@@ -2,7 +2,7 @@
 import axios from 'axios';
 import Link from 'next/link';
 import React, { useState } from 'react'
-import apiClient from "@/app/lib/api"; 
+import apiClient from "../lib/api";
 
 const Contact = () => {
 

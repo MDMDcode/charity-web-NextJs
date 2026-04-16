@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination, Navigation, FreeMode } from 'swiper/modules';
 import { ChevronRight, ChevronLeft, Calendar, ArrowLeft } from 'lucide-react';
-import apiClient from "@/app/lib/api"; 
+import apiClient from "../lib/api";
 
 // Import Swiper styles
 import 'swiper/css';

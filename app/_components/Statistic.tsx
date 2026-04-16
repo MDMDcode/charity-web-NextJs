@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import * as IconsFA from "react-icons/fa6";
-import apiClient from "@/app/lib/api"; 
+import apiClient from "../lib/api";
 
 const StatisticsSection = ({ data }: { data?: any }) => {
     const [stats, setStats] = useState<any[]>([]);

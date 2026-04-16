@@ -3,8 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import * as IconsFA from "react-icons/fa6";
-import apiClient from '@/app/lib/api'
-import axios from 'axios';
+import apiClient from "../lib/api";
 
 const NavBar = () => {
     const [menuItems, setMenuItems] = useState<any[]>([]);

@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import { useEffect, useState } from "react";
-import apiClient from "@/app/lib/api"; 
+import apiClient from "../lib/api";
 
  export default function AlSabrPage() {
 

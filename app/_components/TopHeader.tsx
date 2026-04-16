@@ -3,7 +3,7 @@ import { FaUser, FaShoppingCart } from "react-icons/fa";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import apiClient from "@/app/lib/api"; 
+import apiClient from "../lib/api";
 
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;

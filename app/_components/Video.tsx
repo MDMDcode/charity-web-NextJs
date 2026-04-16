@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Youtube, FileVideo } from 'lucide-react';
-import apiClient from "@/app/lib/api"; 
+import apiClient from "../lib/api";
 
 // هذا المكون الآن يتبع نفس منطق StatisticsSection الخاص بك
 const GalleryVideosCarousel = ({ data }: { data?: any }) => {

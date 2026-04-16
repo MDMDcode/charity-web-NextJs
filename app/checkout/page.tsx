@@ -4,7 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { useState, useEffect, Suspense } from 'react'; // أضفنا Suspense هنا
 import { CheckCircle2, ShieldCheck, Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import apiClient from "@/app/lib/api"; 
+import apiClient from "../lib/api";
 
 // 1. المكون الذي يحتوي على المنطق (Logic)
 function CheckoutContent() {

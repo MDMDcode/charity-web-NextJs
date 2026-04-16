@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay, EffectFade } from 'swiper/modules';
-import apiClient from "@/app/lib/api"; 
+import apiClient from "../lib/api";
 
 // استيراد مكتبات Swiper الأساسية
 import 'swiper/css';

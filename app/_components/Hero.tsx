@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import manus from 'manus';
-import apiClient from "@/app/lib/api"; 
+import apiClient from "../lib/api";
 
 interface HeroSlide {
   id: string;
