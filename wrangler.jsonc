@@ -2,7 +2,8 @@
   "name": "charity-web",
   "compatibility_date": "2026-05-10",
   "compatibility_flags": ["nodejs_compat"],
+  "main": ".open-next/worker.js",
   "assets": {
-    "directory": "./.next"
+    "directory": ".open-next/assets"
   }
 }
