@@ -25,7 +25,7 @@ interface ApiResponse {
   data: HeroSlide[] | { items: HeroSlide[] };
 }
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api-shamel.tmt3.sa';
 const INTERVAL = 5000;
 
 function imgUrl(image: SlideImage | undefined, size: 'original' | 'mobile' = 'original'): string {

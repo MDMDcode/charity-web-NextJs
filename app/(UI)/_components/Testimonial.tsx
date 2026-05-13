@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { FaQuoteRight } from "react-icons/fa";
 import apiClient from "@/app/lib/api";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api-shamel.tmt3.sa';
 
 const getImageUrl = (path: string | null | undefined): string | null => {
   if (!path) return null;

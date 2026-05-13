@@ -15,7 +15,7 @@ const PhotoGallery = ({ data }: { data?: any }) => {
     const [activeAlbum, setActiveAlbum] = useState<any>(null); // الألبوم المختار حالياً
     const [loading, setLoading] = useState(true);
 
-    const API_BASE_URL = 'http://localhost:8000';
+    const API_BASE_URL = 'https://api-shamel.tmt3.sa';
 useEffect(() => {
     const fetchGalleries = async () => {
         try {

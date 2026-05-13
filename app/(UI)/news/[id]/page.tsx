@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = 'https://api-shamel.tmt3.sa';
 
 const getImageUrl = (path: string | null | undefined): string | null => {
     if (!path || path.trim() === '') return null;

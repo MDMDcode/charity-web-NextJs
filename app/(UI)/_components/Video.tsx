@@ -9,7 +9,7 @@ const GalleryVideosCarousel = ({ data }: { data?: any }) => {
     const [allMedia, setAllMedia] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
-    const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+    const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api-shamel.tmt3.sa';
 
     useEffect(() => {
         const fetchMedia = async () => {
