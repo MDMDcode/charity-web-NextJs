@@ -18,7 +18,7 @@ const sectionMap: { [key: string]: React.ElementType } = {
 
 async function getHomepageSections() {
   try {
-    const res = await fetch("http://127.0.0.1:8000/api/v1/homepage-sections", {
+    const res = await fetch("https://api-shamel.tmt3.sa/api/v1/homepage-sections", {
       cache: "no-store",
     });
     if (!res.ok) return [];
