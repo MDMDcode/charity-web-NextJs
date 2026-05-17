@@ -5,10 +5,11 @@ import * as IconsFA from "react-icons/fa6";
 import apiClient from "@/app/lib/api";
 import Link from "next/link";
 
-const StatisticsSection = ({ data }: { data?: any }) => {
-  const [stats, setStats] = useState<any[]>([]);
+const StatisticsSection = ({ data, prefetched }: { data?: any, prefetched?: { items: any[] } }) => {
+  const [stats, setStats] = useState<any[]>(prefetched?.items || []);
 
   useEffect(() => {
+    if (prefetched?.items?.length) return;
     const fetchStats = async () => {
       try {
         const response = await apiClient.get("statistics");
@@ -40,16 +41,13 @@ const StatisticsSection = ({ data }: { data?: any }) => {
       style={{ backgroundColor: "#009689" }}
       dir="rtl"
     >
-      {/* نص خلفي زخرفي */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden">
         <p className="text-[180px] font-black text-white/10 whitespace-nowrap tracking-widest">
-          جميعية تمتع للخدمات الاجتماعية 
+          جميعية تمتع للخدمات الاجتماعية
         </p>
       </div>
 
       <div className="relative container mx-auto px-4 max-w-7xl">
-
-        {/* العنوان والوصف */}
         <div className="text-center mb-14">
           <h2 className="text-4xl font-black text-white mb-3">{title}</h2>
           {subtitle && (
@@ -57,32 +55,23 @@ const StatisticsSection = ({ data }: { data?: any }) => {
           )}
         </div>
 
-        {/* الكروت */}
         <div className="flex flex-wrap justify-center gap-10 mb-14">
           {stats.map((item) => (
             <div key={item.id} className="flex flex-col items-center text-center w-32">
-              {/* الأيقونة */}
               <div className="text-white mb-3">
                 <DynamicIcon name={item.icon} />
               </div>
-
-              {/* اسم الإحصائية */}
               <p className="text-white/90 text-sm font-medium mb-1">
                 {item.title}
               </p>
-
-              {/* الرقم */}
               <h3 className="text-4xl font-black text-white">
                 {(item.number || item.count || 0).toLocaleString("ar-SA")}
               </h3>
-
-              {/* اسم صغير تحت */}
               <p className="text-white/70 text-xs mt-1">{item.title}</p>
             </div>
           ))}
         </div>
 
-        {/* الأزرار */}
         <div className="flex justify-center gap-4">
           <Link
             href="/about"
@@ -97,7 +86,6 @@ const StatisticsSection = ({ data }: { data?: any }) => {
             اتصل بنا
           </Link>
         </div>
-
       </div>
     </section>
   );

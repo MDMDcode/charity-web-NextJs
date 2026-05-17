@@ -1,6 +1,5 @@
 "use client";
 import Link from 'next/link';
-import apiClient from "@/app/lib/api";
 import { useState, useEffect } from "react";
 
 interface HeroSlide {
@@ -22,20 +21,18 @@ function getImageUrl(image: string | { original: string } | undefined): string {
   return `${BASE_URL}${path.startsWith('/') ? path : `/${path}`}`;
 }
 
-export default function HeroSection() {
-  const [slides, setSlides] = useState<HeroSlide[]>([]);
+export default function HeroSection({ data, prefetched }: { data?: any, prefetched?: { slides: HeroSlide[] } }) {
+  const [slides, setSlides] = useState<HeroSlide[]>(prefetched?.slides || []);
   const [current, setCurrent] = useState(0);
 
   useEffect(() => {
-    apiClient.get('hero-slides')
-      .then(res => {
-        const data = res.data;
-        setSlides(data?.data?.items || data?.data || data || []);
-      })
+    if (prefetched?.slides?.length) return;
+    fetch(`${BASE_URL}/api/v1/hero-slides`)
+      .then(res => res.json())
+      .then(json => setSlides(json?.data?.items || json?.data || []))
       .catch(() => setSlides([]));
   }, []);
 
-  // تحرك تلقائي كل 5 ثواني
   useEffect(() => {
     if (slides.length <= 1) return;
     const timer = setInterval(() => {
@@ -54,18 +51,12 @@ export default function HeroSection() {
 
   return (
     <section className="relative h-[98vh] w-full overflow-hidden bg-white" dir="rtl">
-      {/* الخلفية */}
       <div className="absolute inset-0 z-0">
         {imageUrl && (
-          <img
-            src={imageUrl}
-            alt={slide.title}
-            className="w-full h-full object-cover"
-          />
+          <img src={imageUrl} alt={slide.title} className="w-full h-full object-cover" />
         )}
       </div>
 
-      {/* المحتوى */}
       <div className="relative z-10 max-w-5xl mx-auto px-6 h-full flex flex-col justify-center text-center text-slate-900">
         <h1 className="text-5xl md:text-7xl font-black mb-6 leading-tight">
           {slide.title}
@@ -85,34 +76,24 @@ export default function HeroSection() {
         )}
       </div>
 
-      {/* السهمين */}
       {slides.length > 1 && (
         <>
-          <button
-            onClick={prev}
-            className="absolute right-6 top-1/2 -translate-y-1/2 z-20 bg-black/30 hover:bg-black/50 text-white w-12 h-12 rounded-full flex items-center justify-center text-2xl transition"
-          >
+          <button onClick={prev} className="absolute right-6 top-1/2 -translate-y-1/2 z-20 bg-black/30 hover:bg-black/50 text-white w-12 h-12 rounded-full flex items-center justify-center text-2xl transition">
             ›
           </button>
-          <button
-            onClick={next}
-            className="absolute left-6 top-1/2 -translate-y-1/2 z-20 bg-black/30 hover:bg-black/50 text-white w-12 h-12 rounded-full flex items-center justify-center text-2xl transition"
-          >
+          <button onClick={next} className="absolute left-6 top-1/2 -translate-y-1/2 z-20 bg-black/30 hover:bg-black/50 text-white w-12 h-12 rounded-full flex items-center justify-center text-2xl transition">
             ‹
           </button>
         </>
       )}
 
-      {/* النقاط */}
       {slides.length > 1 && (
         <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex gap-2">
           {slides.map((_, i) => (
             <button
               key={i}
               onClick={() => setCurrent(i)}
-              className={`block rounded-full transition-all ${
-                i === current ? 'w-8 h-3 bg-emerald-500' : 'w-3 h-3 bg-black/20'
-              }`}
+              className={`block rounded-full transition-all ${i === current ? 'w-8 h-3 bg-emerald-500' : 'w-3 h-3 bg-black/20'}`}
             />
           ))}
         </div>

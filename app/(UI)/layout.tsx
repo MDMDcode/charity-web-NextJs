@@ -3,10 +3,25 @@ import NavBar from "./_components/NavBar";
 import Footer from "./_components/Footer";
 import "../globals.css";
 
-export default function FrontEndLayout({ children }: { children: React.ReactNode }) {
+const API = "https://api-shamel.tmt3.sa/api/v1";
+
+async function getSettings() {
+  try {
+    const res = await fetch(`${API}/settings`, { next: { revalidate: 60 } });
+    const json = await res.json();
+    return json?.data || null;
+  } catch {
+    return null;
+  }
+}
+
+export default async function FrontEndLayout({ children }: { children: React.ReactNode }) {
+  const settings = await getSettings();
+  const logo = settings?.site_logo?.original || null;
+
   return (
     <>
-     <TopHeader />
+      <TopHeader logo={logo} />
       <NavBar />
       <main>
         {children}

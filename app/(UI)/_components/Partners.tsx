@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination, Navigation } from 'swiper/modules';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
-import apiClient from "@/app/lib/api";
 
 import 'swiper/css';
 import 'swiper/css/pagination';
@@ -12,16 +11,14 @@ import 'swiper/css/navigation';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api-shamel.tmt3.sa';
 
-const PartnersFinal = ({ data }: { data?: any }) => {
-  const [partners, setPartners] = useState<any[]>([]);
+const PartnersFinal = ({ data, prefetched }: { data?: any, prefetched?: { items: any[] } }) => {
+  const [partners, setPartners] = useState<any[]>(prefetched?.items || []);
 
   useEffect(() => {
-    apiClient.get('partners')
-      .then(response => {
-        const res = response.data;
-        const dataArray = res?.data?.items || res?.data || [];
-        setPartners(dataArray);
-      })
+    if (prefetched?.items?.length) return;
+    fetch(`${API_BASE_URL}/api/v1/partners`)
+      .then(res => res.json())
+      .then(json => setPartners(json?.data?.items || json?.data || []))
       .catch(err => console.error("Partners Fetch Error:", err));
   }, []);
 
@@ -34,14 +31,9 @@ const PartnersFinal = ({ data }: { data?: any }) => {
     <section className="py-16 bg-white" dir="rtl">
       <div className="max-w-7xl mx-auto px-6 relative">
 
-        {/* العنوان */}
         <div className="text-center mb-10">
-          {title && (
-            <h3 className="text-2xl font-black text-slate-800">{title}</h3>
-          )}
-          {subtitle && (
-            <p className="text-gray-500 mt-2">{subtitle}</p>
-          )}
+          {title && <h3 className="text-2xl font-black text-slate-800">{title}</h3>}
+          {subtitle && <p className="text-gray-500 mt-2">{subtitle}</p>}
         </div>
 
         <div className="relative px-12">
@@ -65,15 +57,13 @@ const PartnersFinal = ({ data }: { data?: any }) => {
             }}
           >
             {partners.map((partner) => {
-              const rawPath  = partner.logo?.original || "";
+              const rawPath   = partner.logo?.original || "";
               const cleanPath = rawPath.replace('/storage/', '');
               const imageUrl  = `${API_BASE_URL}/api/v1/news-image?path=${cleanPath}`;
 
               return (
                 <SwiperSlide key={partner.id}>
                   <div className="flex flex-col items-center gap-3 py-4">
-
-                    {/* الصورة */}
                     <div className="h-24 w-full flex items-center justify-center">
                       {rawPath ? (
                         <img
@@ -93,21 +83,17 @@ const PartnersFinal = ({ data }: { data?: any }) => {
                         </div>
                       )}
                     </div>
-
-                    {/* الاسم تحت الصورة */}
                     {partner.name && (
                       <p className="text-sm font-bold text-gray-600 text-center line-clamp-1">
                         {partner.name}
                       </p>
                     )}
-
                   </div>
                 </SwiperSlide>
               );
             })}
           </Swiper>
         </div>
-
       </div>
     </section>
   );

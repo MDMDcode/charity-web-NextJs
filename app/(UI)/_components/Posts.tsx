@@ -18,11 +18,10 @@ const getImageUrl = (path: string | null | undefined): string | null => {
   return `${API_BASE_URL}/api/v1/news-image?path=/${cleaned}`;
 };
 
-const NewsSection = ({ data }: { data?: any }) => {
-  const [posts,   setPosts]   = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+const NewsSection = ({ data, prefetched }: { data?: any, prefetched?: { items: any[] } }) => {
+  const [posts, setPosts] = useState<any[]>(prefetched?.items || []);
+  const [loading, setLoading] = useState(!prefetched?.items?.length);
 
-  // ← useCallback يمنع إعادة إنشاء الدالة في كل render
   const fetchPosts = useCallback(async () => {
     try {
       const response = await apiClient.get("posts");
@@ -34,9 +33,10 @@ const NewsSection = ({ data }: { data?: any }) => {
     } finally {
       setLoading(false);
     }
-  }, []); // ← مصفوفة فارغة = مرة واحدة فقط
+  }, []);
 
   useEffect(() => {
+    if (prefetched?.items?.length) return;
     fetchPosts();
   }, [fetchPosts]);
 
@@ -55,8 +55,6 @@ const NewsSection = ({ data }: { data?: any }) => {
   return (
     <section className="py-24 bg-[#F9FAFB] overflow-hidden" dir="rtl">
       <div className="max-w-[1440px] mx-auto px-6">
-
-        {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
           <div className="text-right">
             <div className="flex items-center gap-3 mb-4">
@@ -71,8 +69,6 @@ const NewsSection = ({ data }: { data?: any }) => {
               </p>
             )}
           </div>
-
-          {/* أزرار التنقل */}
           <div className="flex gap-3 self-start md:self-end">
             <button className="news-prev-btn w-14 h-14 rounded-2xl bg-white border border-gray-100 shadow-sm flex items-center justify-center text-slate-700 hover:bg-[#009689] hover:text-white transition-all duration-300 active:scale-90">
               <ChevronRight size={28} />
@@ -83,7 +79,6 @@ const NewsSection = ({ data }: { data?: any }) => {
           </div>
         </div>
 
-        {/* Swiper */}
         <Swiper
           modules={[Autoplay, Pagination, Navigation]}
           spaceBetween={24}
@@ -101,20 +96,17 @@ const NewsSection = ({ data }: { data?: any }) => {
           }}
           className="news-swiper !pb-16"
         >
-          {posts.map((post, index) => {
+          {posts.map((post) => {
             const rawPath =
               post.image?.original?.trim()
                 ? post.image.original
                 : post.gallery?.[0]?.original ?? null;
-
             const imageUrl = getImageUrl(rawPath);
 
             return (
               <SwiperSlide key={post.id} className="h-auto">
                 <Link href={`/news/${post.id}`} className="block h-full">
                   <div className="group/card bg-white rounded-[2.5rem] overflow-hidden border border-gray-50 shadow-sm hover:shadow-2xl transition-all duration-500 h-full flex flex-col">
-                    
-                    {/* الصورة */}
                     <div className="h-64 relative overflow-hidden">
                       {imageUrl ? (
                         <img
@@ -128,7 +120,6 @@ const NewsSection = ({ data }: { data?: any }) => {
                           لا توجد صورة
                         </div>
                       )}
-                      {/* التاريخ */}
                       <div className="absolute top-5 right-5 bg-white/90 backdrop-blur-md px-4 py-2 rounded-2xl shadow-sm flex items-center gap-2 text-[#009689] font-bold text-xs">
                         <Calendar size={14} />
                         {new Date(post.published_at || post.created_at).toLocaleDateString('ar-SA', {
@@ -136,8 +127,6 @@ const NewsSection = ({ data }: { data?: any }) => {
                         })}
                       </div>
                     </div>
-
-                    {/* المحتوى */}
                     <div className="p-8 flex flex-col flex-grow">
                       <h3 className="font-black text-slate-900 text-xl mb-4 line-clamp-2 group-hover/card:text-[#009689] transition-colors duration-300">
                         {post.title}
@@ -162,7 +151,6 @@ const NewsSection = ({ data }: { data?: any }) => {
           })}
         </Swiper>
 
-        {/* Pagination */}
         <div className="news-pagination-custom flex justify-center gap-3 mt-4" />
       </div>
 
