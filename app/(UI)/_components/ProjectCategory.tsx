@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import ProjectCard from "@/app/(UI)/_components/ProjectCard";
-import apiClient from "@/app/lib/api";
+
+const API = "https://api-shamel.tmt3.sa/api/v1";
 
 interface Project {
   id: string;
@@ -22,23 +23,31 @@ interface ProjectCategory {
   projects?: Project[];
 }
 
-export default function ProjectCategoriesSection() {
+export default function ProjectCategoriesSection({ prefetched }: { prefetched?: { items: any[] } }) {
   const [categories, setCategories] = useState<ProjectCategory[]>([]);
-  const [activeTab,  setActiveTab]  = useState<string>("");
-  const [loading,    setLoading]    = useState(true);
+  const [activeTab, setActiveTab] = useState<string>("");
+  const [loading, setLoading] = useState(!prefetched?.items?.length);
 
   useEffect(() => {
+    if (prefetched?.items?.length) {
+      const filtered = prefetched.items.filter((c: any) => c.projects && c.projects.length > 0);
+      setCategories(filtered);
+      if (filtered.length > 0) setActiveTab(filtered[0].id);
+      return;
+    }
+
     async function fetchData() {
       try {
-        const response = await apiClient("project-categories");
-        const data = response.data;
+        const res = await fetch(`${API}/project-categories`);
+        const data = await res.json();
         const cats: ProjectCategory[] = data?.data?.items || data?.data || [];
 
         const withProjects = await Promise.all(
           cats.map(async (cat) => {
             try {
-              const res2 = await apiClient.get(`project-categories/${cat.id}`);
-              return res2.data?.data || cat;
+              const res2 = await fetch(`${API}/project-categories/${cat.id}`);
+              const data2 = await res2.json();
+              return data2?.data || cat;
             } catch {
               return cat;
             }
@@ -65,7 +74,6 @@ export default function ProjectCategoriesSection() {
   return (
     <section className="py-16 bg-white" dir="rtl">
       <div className="container mx-auto px-6 max-w-7xl">
-
         <div className="text-center mb-10">
           <h2 className="text-4xl font-bold text-gray-900 mb-4">مشاريع مميزة</h2>
           <p className="text-gray-500 text-lg italic">ساهموا معنا لخدمة ضيوف الرحمن</p>
@@ -96,8 +104,6 @@ export default function ProjectCategoriesSection() {
                 </div>
               ))}
             </div>
-
-            {/* ← استخدم id بدل slug */}
             <div className="text-center">
               <Link
                 href={`/projects?category=${activeCategory.id}`}

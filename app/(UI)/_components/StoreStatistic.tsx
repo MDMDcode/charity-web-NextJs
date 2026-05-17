@@ -4,20 +4,27 @@ import React, { useEffect, useState } from 'react';
 import * as IconsFA from "react-icons/fa6";
 import apiClient from "@/app/lib/api";
 
-const StoreStatisticsSection = ({ data }: { data?: any }) => {
-  const [stats, setStats] = useState<any[]>([]);
+const StoreStatisticsSection = ({ prefetched }: { prefetched?: { items: any[] } }) => {
+  const [stats, setStats] = useState<any[]>(prefetched?.items || []);
 
   useEffect(() => {
-    apiClient.get('store_statistics')
-      .then(res => {
-        const dataArray = res.data?.data || [];
+    if (prefetched?.items?.length) return;
+    const fetchStats = async () => {
+      try {
+        const response = await apiClient.get("store_statistics");
+        const res = response.data;
+        const dataArray = res?.data?.items || res?.data || [];
         setStats(dataArray);
-      })
-      .catch(err => console.error("Fetch error:", err));
+      } catch (err) {
+        console.error("Fetch error:", err);
+      }
+    };
+    fetchStats();
   }, []);
 
   const DynamicIcon = ({ name }: { name: string }) => {
-    const IconComponent = (IconsFA as any)[name];
+    const cleanName = name ? name.trim() : "";
+    const IconComponent = (IconsFA as any)[cleanName];
     if (!IconComponent) return <IconsFA.FaStore className="w-8 h-8 text-gray-800" />;
     return <IconComponent className="w-8 h-8 text-gray-800" />;
   };
@@ -36,9 +43,7 @@ const StoreStatisticsSection = ({ data }: { data?: any }) => {
               }`}
             >
               <div className="text-right flex flex-col">
-                <h3 className="text-xl font-bold text-gray-900 leading-tight">
-                  {item.title}
-                </h3>
+                <h3 className="text-xl font-bold text-gray-900 leading-tight">{item.title}</h3>
                 <p className="text-gray-500 text-sm mt-1 leading-relaxed max-w-[200px]">
                   {item.number || "استمتع بتجربة آمنة وخصوصية تامة"}
                 </p>
