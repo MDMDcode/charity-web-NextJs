@@ -17,12 +17,6 @@ async function getAbout() {
 export default async function AboutPage() {
   const data = await getAbout();
 
-  if (!data) return (
-    <div className="flex justify-center items-center min-h-screen">
-      <div className="w-8 h-8 border-4 border-[#009689] border-t-transparent rounded-full animate-spin" />
-    </div>
-  );
-
   return (
     <main dir="rtl" className="min-h-screen bg-gray-50">
 
@@ -36,10 +30,10 @@ export default async function AboutPage() {
             من نحن
           </span>
           <h1 className="text-4xl md:text-6xl font-black text-white mb-6 leading-tight">
-            {data.title}
+            {data?.title || "من نحن"}
           </h1>
           <p className="text-white/80 text-lg max-w-2xl mx-auto leading-relaxed">
-            {data.subtitle}
+            {data?.subtitle || "جمعية خيرية رائدة تسعى لخدمة المجتمع"}
           </p>
           <div className="flex gap-3 justify-center mt-10">
             <Link href="/store" className="bg-white text-[#009689] px-8 py-3 rounded-xl font-black hover:bg-gray-100 transition">
@@ -64,7 +58,7 @@ export default async function AboutPage() {
               <Heart size={24} className="text-[#009689] group-hover:text-white transition" />
             </div>
             <h3 className="text-xl font-black text-gray-900 mb-3">رسالتنا</h3>
-            <p className="text-gray-500 text-sm leading-relaxed">{data.our_massage}</p>
+            <p className="text-gray-500 text-sm leading-relaxed">{data?.our_massage || "نسعى لتقديم أفضل الخدمات للمجتمع"}</p>
           </div>
 
           <div className="bg-[#009689] rounded-3xl p-8 shadow-sm hover:shadow-md transition">
@@ -72,7 +66,7 @@ export default async function AboutPage() {
               <Target size={24} className="text-white" />
             </div>
             <h3 className="text-xl font-black text-white mb-3">رؤيتنا</h3>
-            <p className="text-white/80 text-sm leading-relaxed">{data.our_vision}</p>
+            <p className="text-white/80 text-sm leading-relaxed">{data?.our_vision || "أن نكون النموذج الرائد في العمل الخيري"}</p>
           </div>
 
           <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 hover:shadow-md transition group">
@@ -80,7 +74,7 @@ export default async function AboutPage() {
               <Star size={24} className="text-[#009689] group-hover:text-white transition" />
             </div>
             <h3 className="text-xl font-black text-gray-900 mb-3">قيمنا</h3>
-            <p className="text-gray-500 text-sm leading-relaxed">{data.our_values}</p>
+            <p className="text-gray-500 text-sm leading-relaxed">{data?.our_values || "الشفافية والأمانة والإتقان"}</p>
           </div>
         </div>
       </section>
@@ -101,7 +95,7 @@ export default async function AboutPage() {
               <div className="w-8 h-8 shrink-0 rounded-full bg-[#009689] text-white font-black text-sm flex items-center justify-center mt-1">
                 1
               </div>
-              <p className="text-gray-600 leading-relaxed">{data.our_goals}</p>
+              <p className="text-gray-600 leading-relaxed">{data?.our_goals || "تحقيق التكافل الاجتماعي ودعم المحتاجين"}</p>
             </div>
           </div>
         </div>
