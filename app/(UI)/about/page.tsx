@@ -1,35 +1,21 @@
-'use client'
-
-import { useEffect, useState } from "react";
-import apiClient from "@/app/lib/api";
 import Link from "next/link";
 import { Target, Heart, Star, CheckCircle } from "lucide-react";
 
-interface About {
-  id: string;
-  title: string;
-  subtitle: string;
-  our_massage: string;
-  our_vision: string;
-  our_goals: string;
-  our_values: string;
+const API = "https://api-shamel.tmt3.sa/api/v1";
+
+async function getAbout() {
+  try {
+    const res = await fetch(`${API}/about`, { next: { revalidate: 60 } });
+    const json = await res.json();
+    const items = json?.data?.data;
+    return Array.isArray(items) && items.length > 0 ? items[0] : null;
+  } catch {
+    return null;
+  }
 }
 
-export default function AboutPage() {
-  const [data, setData] = useState<About | null>(null);
-
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const res = await apiClient.get("about");
-        const items = res.data?.data?.data;
-        if (Array.isArray(items) && items.length > 0) {
-          setData(items[0]);
-        }
-      } catch {}
-    }
-    fetchData();
-  }, []);
+export default async function AboutPage() {
+  const data = await getAbout();
 
   if (!data) return (
     <div className="flex justify-center items-center min-h-screen">
@@ -38,9 +24,8 @@ export default function AboutPage() {
   );
 
   return (
-    <main dir="rtl" className="min-h-screen bg-gray-50" style={{ fontFamily: "'Tajawal', 'Cairo', sans-serif" }}>
+    <main dir="rtl" className="min-h-screen bg-gray-50">
 
-      {/* ===== Hero ===== */}
       <section className="relative bg-[#009689] overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 right-10 w-64 h-64 rounded-full bg-white" />
@@ -57,23 +42,16 @@ export default function AboutPage() {
             {data.subtitle}
           </p>
           <div className="flex gap-3 justify-center mt-10">
-            <Link
-              href="/store"
-              className="bg-white text-[#009689] px-8 py-3 rounded-xl font-black hover:bg-gray-100 transition"
-            >
+            <Link href="/store" className="bg-white text-[#009689] px-8 py-3 rounded-xl font-black hover:bg-gray-100 transition">
               برامجنا
             </Link>
-            <Link
-              href="/contact"
-              className="border-2 border-white text-white px-8 py-3 rounded-xl font-black hover:bg-white/10 transition"
-            >
+            <Link href="/contact" className="border-2 border-white text-white px-8 py-3 rounded-xl font-black hover:bg-white/10 transition">
               تواصل معنا
             </Link>
           </div>
         </div>
       </section>
 
-      {/* ===== الرسالة / الرؤية / القيم ===== */}
       <section className="max-w-5xl mx-auto px-6 py-16">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-black text-gray-900 mb-2">مبادئنا الأساسية</h2>
@@ -81,8 +59,6 @@ export default function AboutPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-          {/* رسالتنا */}
           <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 hover:shadow-md transition group">
             <div className="w-14 h-14 bg-[#009689]/10 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-[#009689] transition">
               <Heart size={24} className="text-[#009689] group-hover:text-white transition" />
@@ -91,7 +67,6 @@ export default function AboutPage() {
             <p className="text-gray-500 text-sm leading-relaxed">{data.our_massage}</p>
           </div>
 
-          {/* رؤيتنا */}
           <div className="bg-[#009689] rounded-3xl p-8 shadow-sm hover:shadow-md transition">
             <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center mb-5">
               <Target size={24} className="text-white" />
@@ -100,7 +75,6 @@ export default function AboutPage() {
             <p className="text-white/80 text-sm leading-relaxed">{data.our_vision}</p>
           </div>
 
-          {/* قيمنا */}
           <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 hover:shadow-md transition group">
             <div className="w-14 h-14 bg-[#009689]/10 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-[#009689] transition">
               <Star size={24} className="text-[#009689] group-hover:text-white transition" />
@@ -108,15 +82,11 @@ export default function AboutPage() {
             <h3 className="text-xl font-black text-gray-900 mb-3">قيمنا</h3>
             <p className="text-gray-500 text-sm leading-relaxed">{data.our_values}</p>
           </div>
-
         </div>
       </section>
 
-      {/* ===== أهدافنا ===== */}
       <section className="max-w-5xl mx-auto px-6 pb-20">
         <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-
-          {/* Header */}
           <div className="bg-gradient-to-l from-[#009689] to-[#0b6e65] px-10 py-8 flex items-center gap-4">
             <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
               <CheckCircle size={24} className="text-white" />
@@ -126,8 +96,6 @@ export default function AboutPage() {
               <p className="text-white/70 text-sm">ما نسعى إلى تحقيقه</p>
             </div>
           </div>
-
-          {/* المحتوى */}
           <div className="p-10">
             <div className="flex items-start gap-4">
               <div className="w-8 h-8 shrink-0 rounded-full bg-[#009689] text-white font-black text-sm flex items-center justify-center mt-1">
@@ -136,7 +104,6 @@ export default function AboutPage() {
               <p className="text-gray-600 leading-relaxed">{data.our_goals}</p>
             </div>
           </div>
-
         </div>
       </section>
 
