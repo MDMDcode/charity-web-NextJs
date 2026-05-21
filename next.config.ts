@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    unoptimized: true, // هذا سيتجاوز فحص الأمان ومعالجة الصور في بيئة التطوير
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'http',
@@ -16,6 +16,19 @@ const nextConfig = {
         pathname: '/storage/**',
       },
     ],
+  },
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-store, no-cache, must-revalidate',
+          },
+        ],
+      },
+    ];
   },
 };
 

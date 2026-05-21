@@ -7,7 +7,7 @@ const API = "https://api-shamel.tmt3.sa/api/v1";
 
 async function getSettings() {
   try {
-    const res = await fetch(`${API}/settings`, { next: { revalidate: 60 } });
+    const res = await fetch(`${API}/settings`, {  cache: 'no-store'  });
     const json = await res.json();
     return json?.data || null;
   } catch {

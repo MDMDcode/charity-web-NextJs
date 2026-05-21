@@ -10,7 +10,7 @@ const API = "https://api-shamel.tmt3.sa/api/v1";
 
 async function fetchData(endpoint: string) {
   try {
-    const res = await fetch(`${API}/${endpoint}`, { next: { revalidate: 60 } });
+    const res = await fetch(`${API}/${endpoint}`, { cache: 'no-store' });
     if (!res.ok) return [];
     const json = await res.json();
     return json.data?.items || json.data?.data || json.data || [];
@@ -21,7 +21,7 @@ async function fetchData(endpoint: string) {
 
 async function getHomepageSections() {
   try {
-    const res = await fetch(`${API}/homepage-sections`, { next: { revalidate: 60 } });
+    const res = await fetch(`${API}/homepage-sections`, { cache: 'no-store' });
     if (!res.ok) return [];
     const json = await res.json();
     return json.data ?? [];

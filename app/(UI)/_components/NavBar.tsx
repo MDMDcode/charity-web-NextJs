@@ -5,7 +5,7 @@ import Link from 'next/link';
 async function getMenuItems() {
   try {
     const res = await fetch(`https://api-shamel.tmt3.sa/api/v1/menu-items?location=header`, {
-      next: { revalidate: 60 }
+       cache: 'no-store'
     });
     const json = await res.json();
     return json.data || [];
