@@ -30,17 +30,42 @@ async function getHomepageSections() {
   }
 }
 
+async function getSettings() {
+  try {
+    const res = await fetch(`${API}/settings`, { cache: 'no-store' });
+    const json = await res.json();
+    return json?.data || {};
+  } catch {
+    return {};
+  }
+}
+
 export default async function Home() {
-  const [sections, heroSlides, stats, news, partners, gallery, testimonials, videos] = await Promise.all([
+  const [sections, heroSlides, stats, news, partners, gallery, testimonials, videos, settings] = await Promise.all([
     getHomepageSections(),
     fetchData('hero-slides'),
     fetchData('statistics'),
     fetchData('posts'),
     fetchData('partners'),
-    fetchData('galleries'),
+    fetchData('photo-galleries'),
     fetchData('testimonials'),
-    fetchData('videos'),
+    fetchData('video-galleries'),
+    getSettings(),
   ]);
+
+  const siteName = settings?.site_name || '';
+
+  if (settings?.system_status?.is_maintenance_mode) {
+    return (
+      <main dir="rtl" className="min-h-screen bg-[#009689] flex items-center justify-center">
+        <div className="text-center px-6">
+          <div className="text-8xl mb-8">🔧</div>
+          <h1 className="text-4xl font-black text-white mb-4">  {settings?.system_status?.maintenance_message || 'نعمل على تحسين الموقع، نعود قريباً.'} </h1>
+
+        </div>
+      </main>
+    );
+  }
 
   const dataMap: { [key: string]: any } = {
     hero:         { slides: heroSlides },
@@ -72,6 +97,7 @@ export default async function Home() {
             key={section.id}
             data={section}
             prefetched={dataMap[section.section_key]}
+            siteName={siteName}
           />
         );
       })}

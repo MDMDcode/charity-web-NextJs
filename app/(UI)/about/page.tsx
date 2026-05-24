@@ -53,29 +53,31 @@ export default async function AboutPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 hover:shadow-md transition group">
-            <div className="w-14 h-14 bg-[#009689]/10 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-[#009689] transition">
-              <Heart size={24} className="text-[#009689] group-hover:text-white transition" />
-            </div>
-            <h3 className="text-xl font-black text-gray-900 mb-3">رسالتنا</h3>
-            <p className="text-gray-500 text-sm leading-relaxed">{data?.our_massage || "نسعى لتقديم أفضل الخدمات للمجتمع"}</p>
-          </div>
-
-          <div className="bg-[#009689] rounded-3xl p-8 shadow-sm hover:shadow-md transition">
-            <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center mb-5">
-              <Target size={24} className="text-white" />
-            </div>
-            <h3 className="text-xl font-black text-white mb-3">رؤيتنا</h3>
-            <p className="text-white/80 text-sm leading-relaxed">{data?.our_vision || "أن نكون النموذج الرائد في العمل الخيري"}</p>
-          </div>
 
           <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 hover:shadow-md transition group">
             <div className="w-14 h-14 bg-[#009689]/10 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-[#009689] transition">
-              <Star size={24} className="text-[#009689] group-hover:text-white transition" />
+              <Target size={24}  className="text-[#009689] group-hover:text-white transition" />
             </div>
             <h3 className="text-xl font-black text-gray-900 mb-3">قيمنا</h3>
             <p className="text-gray-500 text-sm leading-relaxed">{data?.our_values || "الشفافية والأمانة والإتقان"}</p>
           </div>
+
+          <div className="bg-[#009689] rounded-3xl p-8 shadow-sm border border-gray-100 hover:shadow-md transition group">
+            <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-white transition">
+              <Heart size={24} className="text-[#ffff] group-hover:text-[#009689] transition" />
+            </div>
+            <h3 className="text-xl font-black text-white-900 mb-3">رسالتنا</h3>
+            <p className="text-white font-bold text-sm leading-relaxed">{data?.our_massage || "نسعى لتقديم أفضل الخدمات للمجتمع"}</p>
+          </div>
+
+          <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 hover:shadow-md transition group">
+            <div className="w-14 h-14 bg-[#009689]/10 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-[#009689] transition">
+              <Star size={24}  className="text-[#009689] group-hover:text-white transition" />
+            </div>
+            <h3 className="text-xl font-black text-gray-900 mb-3">قيمنا</h3>
+            <p className="text-gray-500 text-sm leading-relaxed">{data?.our_values || "الشفافية والأمانة والإتقان"}</p>
+          </div>
+
         </div>
       </section>
 
@@ -90,14 +92,20 @@ export default async function AboutPage() {
               <p className="text-white/70 text-sm">ما نسعى إلى تحقيقه</p>
             </div>
           </div>
-          <div className="p-10">
-            <div className="flex items-start gap-4">
-              <div className="w-8 h-8 shrink-0 rounded-full bg-[#009689] text-white font-black text-sm flex items-center justify-center mt-1">
-                1
-              </div>
-              <p className="text-gray-600 leading-relaxed">{data?.our_goals || "تحقيق التكافل الاجتماعي ودعم المحتاجين"}</p>
-            </div>
-          </div>
+  <div className="p-10">
+  <div className="flex items-start gap-4">
+    {data?.our_goals ? (
+      <div
+        className="text-gray-600 leading-relaxed [&_ol]:list-decimal [&_ol]:pr-6 [&_li]:mb-2 [&_strong]:font-bold"
+        dangerouslySetInnerHTML={{ __html: data.our_goals }}
+      />
+    ) : (
+      <p className="text-gray-600 leading-relaxed">
+        تحقيق التكافل الاجتماعي ودعم المحتاجين
+      </p>
+    )}
+  </div>
+</div>
         </div>
       </section>
 

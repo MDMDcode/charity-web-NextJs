@@ -5,7 +5,7 @@ import * as IconsFA from "react-icons/fa6";
 import apiClient from "@/app/lib/api";
 import Link from "next/link";
 
-const StatisticsSection = ({ data, prefetched }: { data?: any, prefetched?: { items: any[] } }) => {
+const StatisticsSection = ({ data, prefetched, siteName }: { data?: any, prefetched?: { items: any[], siteName?: string }, siteName?: string }) => {
   const [stats, setStats] = useState<any[]>(prefetched?.items || []);
 
   useEffect(() => {
@@ -34,6 +34,7 @@ const StatisticsSection = ({ data, prefetched }: { data?: any, prefetched?: { it
 
   const title    = data?.title?.trim()    || data?.name || "الإحصائيات";
   const subtitle = data?.subtitle?.trim() || "";
+  const bgText   = siteName || prefetched?.siteName || 'جمعية خيرية';
 
   return (
     <section
@@ -43,7 +44,7 @@ const StatisticsSection = ({ data, prefetched }: { data?: any, prefetched?: { it
     >
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden">
         <p className="text-[180px] font-black text-white/10 whitespace-nowrap tracking-widest">
-          جميعية تمتع للخدمات الاجتماعية
+          {bgText}
         </p>
       </div>
 
@@ -61,13 +62,12 @@ const StatisticsSection = ({ data, prefetched }: { data?: any, prefetched?: { it
               <div className="text-white mb-3">
                 <DynamicIcon name={item.icon} />
               </div>
-              <p className="text-white/90 text-sm font-medium mb-1">
+              <p className="text-white/90 text-2xl font-medium mb-1">
                 {item.title}
               </p>
               <h3 className="text-4xl font-black text-white">
                 {(item.number || item.count || 0).toLocaleString("ar-SA")}
               </h3>
-              <p className="text-white/70 text-xs mt-1">{item.title}</p>
             </div>
           ))}
         </div>

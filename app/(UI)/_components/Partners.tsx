@@ -60,35 +60,46 @@ const PartnersFinal = ({ data, prefetched }: { data?: any, prefetched?: { items:
               const rawPath   = partner.logo?.original || "";
               const cleanPath = rawPath.replace('/storage/', '');
               const imageUrl  = `${API_BASE_URL}/api/v1/news-image?path=${cleanPath}`;
+              const hasLink   = partner.website_url;
+
+              const CardContent = (
+                <div className={`flex flex-col items-center gap-3 py-4 rounded-xl transition-all duration-300 ${hasLink ? 'cursor-pointer hover:scale-105 hover:shadow-md' : ''}`}>
+                  <div className="h-24 w-full flex items-center justify-center">
+                    {rawPath ? (
+                      <img
+                        src={imageUrl}
+                        alt={partner.name || "شريك"}
+                        className="max-h-full max-w-full object-contain"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          if (!target.src.includes('direct=1')) {
+                            target.src = `${API_BASE_URL}${rawPath}?direct=1`;
+                          }
+                        }}
+                      />
+                    ) : (
+                      <div className="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center">
+                        <span className="text-gray-400 text-xs">لا توجد صورة</span>
+                      </div>
+                    )}
+                  </div>
+                  {partner.name && (
+                    <p className="text-sm font-bold text-gray-600 text-center line-clamp-1">
+                      {partner.name}
+                    </p>
+                  )}
+                </div>
+              );
 
               return (
                 <SwiperSlide key={partner.id}>
-                  <div className="flex flex-col items-center gap-3 py-4">
-                    <div className="h-24 w-full flex items-center justify-center">
-                      {rawPath ? (
-                        <img
-                          src={imageUrl}
-                          alt={partner.name || "شريك"}
-                          className="max-h-full max-w-full object-contain transition-all duration-500 hover:scale-110"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            if (!target.src.includes('direct=1')) {
-                              target.src = `${API_BASE_URL}${rawPath}?direct=1`;
-                            }
-                          }}
-                        />
-                      ) : (
-                        <div className="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center">
-                          <span className="text-gray-400 text-xs">لا توجد صورة</span>
-                        </div>
-                      )}
-                    </div>
-                    {partner.name && (
-                      <p className="text-sm font-bold text-gray-600 text-center line-clamp-1">
-                        {partner.name}
-                      </p>
-                    )}
-                  </div>
+                  {hasLink ? (
+                    <a href={hasLink} target="_blank" rel="noopener noreferrer">
+                      {CardContent}
+                    </a>
+                  ) : (
+                    <div>{CardContent}</div>
+                  )}
                 </SwiperSlide>
               );
             })}

@@ -19,7 +19,7 @@ const getImageUrl = (path: string | null | undefined): string | null => {
 };
 
 const NewsSection = ({ data, prefetched }: { data?: any, prefetched?: { items: any[] } }) => {
-  const [posts, setPosts] = useState<any[]>(prefetched?.items || []);
+  const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(!prefetched?.items?.length);
 
   const fetchPosts = useCallback(async () => {
@@ -27,7 +27,8 @@ const NewsSection = ({ data, prefetched }: { data?: any, prefetched?: { items: a
       const response = await apiClient.get("posts");
       const res = response.data;
       const dataArray = res?.data?.items || res?.data?.data || res?.data || [];
-      setPosts(dataArray);
+      const featured = dataArray.filter((p: any) => p.is_featured);
+      setPosts(featured.length > 0 ? featured : dataArray);
     } catch (err) {
       console.error("Fetch error:", err);
     } finally {
@@ -36,7 +37,12 @@ const NewsSection = ({ data, prefetched }: { data?: any, prefetched?: { items: a
   }, []);
 
   useEffect(() => {
-    if (prefetched?.items?.length) return;
+    if (prefetched?.items?.length) {
+      const featured = prefetched.items.filter((p: any) => p.is_featured);
+      setPosts(featured.length > 0 ? featured : prefetched.items);
+      setLoading(false);
+      return;
+    }
     fetchPosts();
   }, [fetchPosts]);
 
@@ -69,7 +75,7 @@ const NewsSection = ({ data, prefetched }: { data?: any, prefetched?: { items: a
               </p>
             )}
           </div>
-          <div className="flex gap-3 self-start md:self-end">
+          <div className="flex items-center gap-3 self-start md:self-end">
             <button className="news-prev-btn w-14 h-14 rounded-2xl bg-white border border-gray-100 shadow-sm flex items-center justify-center text-slate-700 hover:bg-[#009689] hover:text-white transition-all duration-300 active:scale-90">
               <ChevronRight size={28} />
             </button>
@@ -152,7 +158,17 @@ const NewsSection = ({ data, prefetched }: { data?: any, prefetched?: { items: a
         </Swiper>
 
         <div className="news-pagination-custom flex justify-center gap-3 mt-4" />
-      </div>
+<div className="news-pagination-custom flex justify-center gap-3 mt-4" />
+
+<div className="flex justify-center mt-8">
+  <Link
+    href="/posts"
+    className="px-8 py-3 rounded-full border-2 border-[#009689] text-[#009689] hover:bg-[#009689] hover:text-white font-bold text-sm transition-all duration-300"
+  >
+    عرض جميع الأخبار
+  </Link>
+</div>
+       </div>
 
       <style jsx global>{`
         .news-swiper .swiper-pagination-bullet {

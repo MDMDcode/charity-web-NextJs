@@ -3,31 +3,45 @@
 import React, { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay, EffectFade } from 'swiper/modules';
+import Link from 'next/link';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/effect-fade';
 
+const API_BASE_URL = 'https://api-shamel.tmt3.sa';
+const API = `${API_BASE_URL}/api/v1`;
+
 const PhotoGallery = ({ data, prefetched }: { data?: any, prefetched?: { items: any[] } }) => {
     const [galleries, setGalleries] = useState<any[]>([]);
     const [activeAlbum, setActiveAlbum] = useState<any>(null);
 
-    const API_BASE_URL = 'https://api-shamel.tmt3.sa';
-
     useEffect(() => {
         const source = prefetched?.items || [];
-        const onlyPhotoAlbums = source.filter((album: any) => {
-            const hasImages = album.images && album.images.length > 0;
-            const hasNoVideoLinks = !album.links || album.links.length === 0;
-            return hasImages && hasNoVideoLinks;
-        });
-        setGalleries(onlyPhotoAlbums);
-        if (onlyPhotoAlbums.length > 0) setActiveAlbum(onlyPhotoAlbums[0]);
+        const featured = source.filter((album: any) => album.is_featured && album.images?.length > 0);
+
+        if (featured.length > 0) {
+            setGalleries(featured);
+            setActiveAlbum(featured[0]);
+            return;
+        }
+
+        fetch(`${API}/photo-galleries`)
+            .then(res => res.json())
+            .then(json => {
+                const items = json?.data?.items || [];
+                const filtered = items.filter((album: any) => album.is_featured && album.images?.length > 0);
+                setGalleries(filtered);
+                if (filtered.length > 0) setActiveAlbum(filtered[0]);
+            })
+            .catch(err => console.error(err));
     }, [prefetched]);
 
     const buildImageUrl = (img: any) => {
-        if (!img || !img.file_name || !img.folder_id) return null;
-        return `${API_BASE_URL}/api/v1/fetch-secure-image?p=${img.folder_id}/${img.file_name}`;
+        if (!img) return null;
+        const url = img.url || '';
+        if (url.startsWith('http')) return url;
+        return `${API_BASE_URL}${url}`;
     };
 
     if (galleries.length === 0) return null;
@@ -78,6 +92,15 @@ const PhotoGallery = ({ data, prefetched }: { data?: any, prefetched?: { items: 
                                 </button>
                             ))}
                         </div>
+
+                        <div className="mt-4 text-center">
+                            <Link
+                                href="/galleries"
+                                className="inline-block border-2 border-[#0FAFA0] text-[#0FAFA0] hover:bg-[#0FAFA0] hover:text-white font-bold px-8 py-3 rounded-full transition-all"
+                            >
+                                عرض كل الألبومات
+                            </Link>
+                        </div>
                     </div>
 
                     <div className="lg:col-span-8 bg-white p-3 rounded-2xl shadow-2xl relative min-h-[400px]">
@@ -108,6 +131,7 @@ const PhotoGallery = ({ data, prefetched }: { data?: any, prefetched?: { items: 
                     </div>
                 </div>
             </div>
+            
 
             <style jsx global>{`
                 .custom-scrollbar::-webkit-scrollbar { width: 4px; }

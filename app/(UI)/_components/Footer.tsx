@@ -78,7 +78,7 @@ const Footer = async () => {
       <div className="bg-[#121A1B] py-5 px-4 text-center">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-3 text-xs text-gray-400">
           <p className="flex-1 text-center font-medium">
-            جميع الحقوق محفوظة © {settings?.site_name || 'الجمعية'} 2024
+            جميع الحقوق محفوظة © {settings?.site_name || 'الجمعية'} 
           </p>
         </div>
       </div>
