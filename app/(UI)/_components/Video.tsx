@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Youtube, FileVideo } from 'lucide-react';
 import Link from 'next/link';
 
@@ -10,6 +10,7 @@ const API = `${API_BASE_URL}/api/v1`;
 const GalleryVideosCarousel = ({ data, prefetched }: { data?: any, prefetched?: { items: any[] } }) => {
     const [albums, setAlbums] = useState<any[]>([]);
     const [activeAlbum, setActiveAlbum] = useState<any>(null);
+    const videoRefs = useRef<{ [key: string]: HTMLVideoElement | null }>({});
 
     useEffect(() => {
         const source = prefetched?.items || [];
@@ -24,6 +25,17 @@ const GalleryVideosCarousel = ({ data, prefetched }: { data?: any, prefetched?: 
 
         processItems(source);
     }, [prefetched]);
+
+    // تفريغ وإعادة تحميل مشغل الفيديو فور تغيير الألبوم لضمان قراءة الرابط الجديد
+    useEffect(() => {
+        if (activeAlbum) {
+            Object.values(videoRefs.current).forEach((videoElement) => {
+                if (videoElement) {
+                    videoElement.load(); 
+                }
+            });
+        }
+    }, [activeAlbum]);
 
     const processItems = (source: any[]) => {
         const featured = source.filter((album: any) => album.is_featured);
@@ -40,13 +52,31 @@ const GalleryVideosCarousel = ({ data, prefetched }: { data?: any, prefetched?: 
 
     const getAlbumMedia = (album: any) => {
         const items: any[] = [];
+        
         album?.videos?.forEach((v: any) => {
-            const url = v.url?.startsWith('http') ? v.url : `${API_BASE_URL}${v.url}`;
-            items.push({ url, type: 'video' });
+            let url = v.url || '';
+            
+            if (!url.startsWith('http')) {
+                // تنظيف الرابط من السلاش في البداية إن وجدت
+                let cleanPath = url.startsWith('/') ? url.substring(1) : url;
+                
+                // التعديل النهائي بناءً على الرابط الشغال:
+                // نقوم بإزالة كلمة storage/ إذا كانت قادمة من قاعدة البيانات لتمرير المسار النظيف لـ p=
+                if (cleanPath.startsWith('storage/')) {
+                    cleanPath = cleanPath.replace('storage/', '');
+                }
+                
+                // تركيب الرابط الموثوق الذي نجح في المتصفح
+                url = `${API}/fetch-secure-image?p=${cleanPath}`;
+            }
+            
+            items.push({ url, type: 'video', id: v.id });
         });
-        album?.links?.forEach((link: string) => {
-            if (link) items.push({ url: link, type: 'link' });
+
+        album?.links?.forEach((link: string, index: number) => {
+            if (link) items.push({ url: link, type: 'link', id: `link-${index}` });
         });
+        
         return items;
     };
 
@@ -67,7 +97,6 @@ const GalleryVideosCarousel = ({ data, prefetched }: { data?: any, prefetched?: 
                             <p className="text-gray-600 text-lg mr-6">{data.subtitle}</p>
                         )}
                     </div>
-
                 </div>
 
                 <div className="flex flex-wrap gap-3 mb-8">
@@ -88,11 +117,19 @@ const GalleryVideosCarousel = ({ data, prefetched }: { data?: any, prefetched?: 
 
                 <div className="flex gap-6 overflow-x-auto pb-8 no-scrollbar scroll-smooth">
                     {activeMedia.map((item, idx) => (
-                        <div key={idx} className="flex-shrink-0 w-80 md:w-96 bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+                        <div key={`${activeAlbum.id}-${item.id}-${idx}`} className="flex-shrink-0 w-80 md:w-96 bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
                             <div className="aspect-video bg-black relative">
                                 {item.type === 'video' ? (
-                                    <video controls className="w-full h-full object-cover" preload="metadata">
+                                    <video 
+                                        ref={(el) => { videoRefs.current[`${activeAlbum.id}-${item.id}`] = el; }}
+                                        controls 
+                                        className="w-full h-full object-cover" 
+                                        preload="auto"
+                                        playsInline
+                                        crossOrigin="anonymous"
+                                    >
                                         <source src={item.url} type="video/mp4" />
+                                        متصفحك لا يدعم تشغيل هذا الفيديو.
                                     </video>
                                 ) : (
                                     getYoutubeEmbed(item.url) && (
@@ -118,14 +155,14 @@ const GalleryVideosCarousel = ({ data, prefetched }: { data?: any, prefetched?: 
                     ))}
                 </div>
 
-                    <div className="flex justify-center mt-8">
-  <Link
-    href="/videos"
-    className="px-8 py-3 rounded-full border-2 border-[#009689] text-[#009689] hover:bg-[#009689] hover:text-white font-bold text-sm transition-all duration-300"
-    >
-    عرض جميع الفيديو
-  </Link>
-   </div>
+                <div className="flex justify-center mt-8">
+                    <Link
+                        href="/videos"
+                        className="px-8 py-3 rounded-full border-2 border-[#009689] text-[#009689] hover:bg-[#009689] hover:text-white font-bold text-sm transition-all duration-300"
+                    >
+                        عرض جميع الفيديو
+                    </Link>
+                </div>
             </div>
 
             <style jsx global>{`

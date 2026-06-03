@@ -1,8 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    unoptimized: true,
     remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'api-shamel.tmt3.sa',
+      },
       {
         protocol: 'http',
         hostname: '127.0.0.1',
@@ -16,6 +19,7 @@ const nextConfig = {
         pathname: '/storage/**',
       },
     ],
+    formats: ['image/webp', 'image/avif'],
   },
   async headers() {
     return [
@@ -24,7 +28,7 @@ const nextConfig = {
         headers: [
           {
             key: 'Cache-Control',
-            value: 'no-store, no-cache, must-revalidate',
+            value: 'public, max-age=300, stale-while-revalidate=600',
           },
         ],
       },

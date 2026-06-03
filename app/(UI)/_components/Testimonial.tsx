@@ -40,9 +40,6 @@ export default function Testimonial({ data, prefetched }: { data?: any, prefetch
         <div className="w-[25%] flex flex-col items-center text-center gap-4">
           {title && <h2 className="text-black text-3xl font-bold">{title}</h2>}
           {subtitle && <p className="text-gray-500 text-sm">{subtitle}</p>}
-          <button className="text-white cursor-pointer px-5 py-2 bg-[#009689] shadow-lg rounded-lg text-sm font-bold hover:bg-[#007a6e] transition-colors">
-            عرض كافة التزكيات
-          </button>
         </div>
 
         <div className="w-[68%] bg-[#F5F5F5] rounded-3xl shadow-xl relative pt-16 pb-6">

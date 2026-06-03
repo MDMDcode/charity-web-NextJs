@@ -33,11 +33,11 @@ export default function TopHeader({ logo: initialLogo }: { logo?: string | null 
 
   return (
     <div>
-      <div dir="rtl" className="bg-[#F8F8F8] h-16 flex items-center justify-between px-8 border-b border-gray-200">
+      <div dir="rtl" className="bg-[#F8F8F8] h-22 flex items-center justify-between px-8 border-b border-gray-200">
 
-        <div className="flex items-center">
+        <div className="flex items-center ">
           {logo ? (
-            <img src={logo} alt="شعار الجمعية" className="h-20 object-contain" />
+            <Link href="https://demo-shamel.tmt3.sa/"><img src={logo} alt="شعار الجمعية" className="h-20 object-contain" /></Link>
           ) : (
             <div className="h-10 w-24 bg-gray-200 animate-pulse rounded" />
           )}

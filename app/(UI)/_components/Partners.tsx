@@ -9,14 +9,12 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api-shamel.tmt3.sa';
-
 const PartnersFinal = ({ data, prefetched }: { data?: any, prefetched?: { items: any[] } }) => {
   const [partners, setPartners] = useState<any[]>(prefetched?.items || []);
 
   useEffect(() => {
     if (prefetched?.items?.length) return;
-    fetch(`${API_BASE_URL}/api/v1/partners`)
+    fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://api-shamel.tmt3.sa'}/api/v1/partners`)
       .then(res => res.json())
       .then(json => setPartners(json?.data?.items || json?.data || []))
       .catch(err => console.error("Partners Fetch Error:", err));
@@ -57,24 +55,19 @@ const PartnersFinal = ({ data, prefetched }: { data?: any, prefetched?: { items:
             }}
           >
             {partners.map((partner) => {
-              const rawPath   = partner.logo?.original || "";
-              const cleanPath = rawPath.replace('/storage/', '');
-              const imageUrl  = `${API_BASE_URL}/api/v1/news-image?path=${cleanPath}`;
-              const hasLink   = partner.website_url;
+              const imageUrl = partner.logo?.original || "";
+              const hasLink  = partner.website_url;
 
               const CardContent = (
                 <div className={`flex flex-col items-center gap-3 py-4 rounded-xl transition-all duration-300 ${hasLink ? 'cursor-pointer hover:scale-105 hover:shadow-md' : ''}`}>
                   <div className="h-24 w-full flex items-center justify-center">
-                    {rawPath ? (
+                    {imageUrl ? (
                       <img
                         src={imageUrl}
                         alt={partner.name || "شريك"}
                         className="max-h-full max-w-full object-contain"
                         onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          if (!target.src.includes('direct=1')) {
-                            target.src = `${API_BASE_URL}${rawPath}?direct=1`;
-                          }
+                          (e.target as HTMLImageElement).style.display = 'none';
                         }}
                       />
                     ) : (
