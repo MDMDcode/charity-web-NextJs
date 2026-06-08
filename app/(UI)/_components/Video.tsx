@@ -14,7 +14,6 @@ const GalleryVideosCarousel = ({ data, prefetched }: { data?: any, prefetched?: 
 
     useEffect(() => {
         const source = prefetched?.items || [];
-
         if (!source.length) {
             fetch(`${API}/video-galleries`)
                 .then(res => res.json())
@@ -22,17 +21,13 @@ const GalleryVideosCarousel = ({ data, prefetched }: { data?: any, prefetched?: 
                 .catch(err => console.error(err));
             return;
         }
-
         processItems(source);
     }, [prefetched]);
 
-    // تفريغ وإعادة تحميل مشغل الفيديو فور تغيير الألبوم لضمان قراءة الرابط الجديد
     useEffect(() => {
         if (activeAlbum) {
             Object.values(videoRefs.current).forEach((videoElement) => {
-                if (videoElement) {
-                    videoElement.load(); 
-                }
+                if (videoElement) videoElement.load();
             });
         }
     }, [activeAlbum]);
@@ -52,31 +47,34 @@ const GalleryVideosCarousel = ({ data, prefetched }: { data?: any, prefetched?: 
 
     const getAlbumMedia = (album: any) => {
         const items: any[] = [];
-        
-        album?.videos?.forEach((v: any) => {
-            let url = v.url || '';
-            
-            if (!url.startsWith('http')) {
-                // تنظيف الرابط من السلاش في البداية إن وجدت
-                let cleanPath = url.startsWith('/') ? url.substring(1) : url;
-                
-                // التعديل النهائي بناءً على الرابط الشغال:
-                // نقوم بإزالة كلمة storage/ إذا كانت قادمة من قاعدة البيانات لتمرير المسار النظيف لـ p=
-                if (cleanPath.startsWith('storage/')) {
-                    cleanPath = cleanPath.replace('storage/', '');
+
+        const rawLinks = album?.links;
+        const linksList: string[] = !rawLinks
+            ? []
+            : typeof rawLinks === 'string'
+                ? (rawLinks.trim() ? [rawLinks.trim()] : [])
+                : Array.isArray(rawLinks)
+                    ? rawLinks.filter(Boolean)
+                    : [];
+
+        if (Array.isArray(album?.videos)) {
+            album.videos.forEach((v: any) => {
+                let url = v.url || '';
+                if (!url.startsWith('http')) {
+                    let cleanPath = url.startsWith('/') ? url.substring(1) : url;
+                    if (cleanPath.startsWith('storage/')) {
+                        cleanPath = cleanPath.replace('storage/', '');
+                    }
+                    url = `${API}/fetch-secure-image?p=${cleanPath}`;
                 }
-                
-                // تركيب الرابط الموثوق الذي نجح في المتصفح
-                url = `${API}/fetch-secure-image?p=${cleanPath}`;
-            }
-            
-            items.push({ url, type: 'video', id: v.id });
+                items.push({ url, type: 'video', id: v.id });
+            });
+        }
+
+        linksList.forEach((link, index) => {
+            items.push({ url: link, type: 'link', id: `link-${index}` });
         });
 
-        album?.links?.forEach((link: string, index: number) => {
-            if (link) items.push({ url: link, type: 'link', id: `link-${index}` });
-        });
-        
         return items;
     };
 
@@ -116,43 +114,49 @@ const GalleryVideosCarousel = ({ data, prefetched }: { data?: any, prefetched?: 
                 </div>
 
                 <div className="flex gap-6 overflow-x-auto pb-8 no-scrollbar scroll-smooth">
-                    {activeMedia.map((item, idx) => (
-                        <div key={`${activeAlbum.id}-${item.id}-${idx}`} className="flex-shrink-0 w-80 md:w-96 bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
-                            <div className="aspect-video bg-black relative">
-                                {item.type === 'video' ? (
-                                    <video 
-                                        ref={(el) => { videoRefs.current[`${activeAlbum.id}-${item.id}`] = el; }}
-                                        controls 
-                                        className="w-full h-full object-cover" 
-                                        preload="auto"
-                                        playsInline
-                                        crossOrigin="anonymous"
-                                    >
-                                        <source src={item.url} type="video/mp4" />
-                                        متصفحك لا يدعم تشغيل هذا الفيديو.
-                                    </video>
-                                ) : (
-                                    getYoutubeEmbed(item.url) && (
-                                        <iframe
-                                            className="w-full h-full"
-                                            src={getYoutubeEmbed(item.url)!}
-                                            allowFullScreen
-                                            loading="lazy"
-                                        />
-                                    )
-                                )}
-                            </div>
-                            <div className="p-4 bg-white flex items-center justify-between">
-                                <span className="text-sm font-bold truncate max-w-[200px]">
-                                    {activeAlbum?.title}
-                                </span>
-                                {item.type === 'video'
-                                    ? <FileVideo className="text-[#0FAFA0]" size={20} />
-                                    : <Youtube className="text-red-600" size={20} />
-                                }
-                            </div>
+                    {activeMedia.length === 0 ? (
+                        <div className="w-full text-center text-gray-400 py-12">
+                            لا توجد مقاطع في هذا الألبوم
                         </div>
-                    ))}
+                    ) : (
+                        activeMedia.map((item, idx) => (
+                            <div key={`${activeAlbum.id}-${item.id}-${idx}`} className="flex-shrink-0 w-80 md:w-96 bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+                                <div className="aspect-video bg-black relative">
+                                    {item.type === 'video' ? (
+                                        <video
+                                            ref={(el) => { videoRefs.current[`${activeAlbum.id}-${item.id}`] = el; }}
+                                            controls
+                                            className="w-full h-full object-cover"
+                                            preload="auto"
+                                            playsInline
+                                            crossOrigin="anonymous"
+                                        >
+                                            <source src={item.url} type="video/mp4" />
+                                            متصفحك لا يدعم تشغيل هذا الفيديو.
+                                        </video>
+                                    ) : (
+                                        getYoutubeEmbed(item.url) && (
+                                            <iframe
+                                                className="w-full h-full"
+                                                src={getYoutubeEmbed(item.url)!}
+                                                allowFullScreen
+                                                loading="lazy"
+                                            />
+                                        )
+                                    )}
+                                </div>
+                                <div className="p-4 bg-white flex items-center justify-between">
+                                    <span className="text-sm font-bold truncate max-w-[200px]">
+                                        {activeAlbum?.title}
+                                    </span>
+                                    {item.type === 'video'
+                                        ? <FileVideo className="text-[#0FAFA0]" size={20} />
+                                        : <Youtube className="text-red-600" size={20} />
+                                    }
+                                </div>
+                            </div>
+                        ))
+                    )}
                 </div>
 
                 <div className="flex justify-center mt-8">

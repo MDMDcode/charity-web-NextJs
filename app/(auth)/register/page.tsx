@@ -29,7 +29,6 @@ export default function RegisterPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // إرسال OTP
   const sendOtp = async () => {
     if (!form.email) return setError("أدخل البريد الإلكتروني أولاً");
     setOtpLoading(true);
@@ -44,18 +43,29 @@ export default function RegisterPage() {
     }
   };
 
-  // التحقق من OTP
-  const verifyOtp = () => {
-    if (!form.otp) return setError("أدخل رمز التحقق");
-    if (form.otp.length < 6) return setError("الرمز يجب أن يكون 6 أرقام");
-    setError("");
+const verifyOtp = async () => {
+  if (!form.otp)           return setError("أدخل رمز التحقق");
+  if (form.otp.length < 6) return setError("الرمز يجب أن يكون 6 أرقام");
+  setError("");
+  setOtpLoading(true);
+  try {
+    await apiClient.post("/auth/verify-otp", {
+      email: form.email,
+      otp:   form.otp,
+    });
     setOtpVerified(true);
-  };
+  } catch (err: any) {
+    setError(err.response?.data?.message || "رمز التحقق غير صحيح");
+    setOtpVerified(false);
+  } finally {
+    setOtpLoading(false);
+  }
+};
 
-  // إنشاء الحساب
   const register = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!otpSent)    return setError("أرسل رمز التحقق أولاً");
+    if (!otpSent)     return setError("أرسل رمز التحقق أولاً");
+    if (!otpVerified) return setError("تحقق من رمز OTP أولاً");
     if (form.password !== form.password_confirmation)
       return setError("كلمة المرور غير متطابقة");
 
@@ -85,31 +95,30 @@ export default function RegisterPage() {
       <h1 className="text-2xl font-black mb-2">إنشاء حساب</h1>
       <p className="text-gray-500 text-sm mb-8">أهلاً! سجّل بياناتك للانضمام إلينا</p>
 
-      <form onSubmit={register} className="space-y-4">
+      <form onSubmit={register} className="space-y-4" autoComplete="off">
 
-        {/* الاسم */}
         <input
           type="text"
           name="name"
           required
           placeholder="الاسم الكامل"
           value={form.name}
+          autoComplete="off"
           className="w-full p-4 rounded-xl border bg-gray-50 outline-none focus:border-[#009689]"
           onChange={handleChange}
         />
 
-        {/* الجوال */}
         <input
           type="tel"
           name="phone"
           required
           placeholder="رقم الجوال (05xxxxxxxx)"
           value={form.phone}
+          autoComplete="off"
           className="w-full p-4 rounded-xl border bg-gray-50 outline-none focus:border-[#009689] text-left"
           onChange={handleChange}
         />
 
-        {/* البريد + زر إرسال OTP */}
         <div className="flex gap-2">
           <input
             type="email"
@@ -117,6 +126,7 @@ export default function RegisterPage() {
             required
             placeholder="البريد الإلكتروني"
             value={form.email}
+            autoComplete="off"
             className="flex-1 p-4 rounded-xl border bg-gray-50 outline-none focus:border-[#009689]"
             onChange={handleChange}
           />
@@ -136,7 +146,6 @@ export default function RegisterPage() {
           </button>
         </div>
 
-        {/* حقل OTP + زر التحقق */}
         {otpSent && (
           <div className="flex gap-2">
             <input
@@ -147,6 +156,7 @@ export default function RegisterPage() {
               maxLength={6}
               inputMode="numeric"
               value={form.otp}
+              autoComplete="one-time-code"
               className={`flex-1 p-4 rounded-xl border bg-gray-50 outline-none text-center tracking-[0.4em] text-xl font-bold transition ${
                 otpVerified
                   ? "border-green-400 bg-green-50"
@@ -160,7 +170,7 @@ export default function RegisterPage() {
             <button
               type="button"
               onClick={verifyOtp}
-              disabled={otpVerified || form.otp.length < 6}
+              disabled={otpVerified || form.otp.length < 6 || otpLoading}
               className="shrink-0 px-4 py-2 rounded-xl border-2 border-[#009689] text-[#009689] text-sm font-bold disabled:opacity-50 flex items-center gap-1 whitespace-nowrap"
             >
               {otpVerified
@@ -172,7 +182,6 @@ export default function RegisterPage() {
           </div>
         )}
 
-        {/* رسالة نجاح OTP */}
         {otpVerified && (
           <p className="text-green-600 text-sm bg-green-50 p-3 rounded-xl flex items-center gap-2">
             <CheckCircle2 size={16} />
@@ -180,13 +189,13 @@ export default function RegisterPage() {
           </p>
         )}
 
-        {/* كلمة المرور */}
         <input
           type="password"
           name="password"
           required
           placeholder="كلمة المرور (8 أحرف على الأقل)"
           value={form.password}
+          autoComplete="new-password"
           className="w-full p-4 rounded-xl border bg-gray-50 outline-none focus:border-[#009689]"
           onChange={handleChange}
         />
@@ -197,19 +206,18 @@ export default function RegisterPage() {
           required
           placeholder="تأكيد كلمة المرور"
           value={form.password_confirmation}
+          autoComplete="new-password"
           className="w-full p-4 rounded-xl border bg-gray-50 outline-none focus:border-[#009689]"
           onChange={handleChange}
         />
 
-        {/* الخطأ */}
         {error && (
           <p className="text-red-500 text-sm bg-red-50 p-3 rounded-xl">{error}</p>
         )}
 
-        {/* زر الإنشاء */}
         <button
           type="submit"
-          disabled={busy}
+          disabled={busy || !otpVerified}
           className="w-full bg-[#009689] text-white py-4 rounded-2xl font-bold flex justify-center items-center gap-2 disabled:opacity-60"
         >
           {busy

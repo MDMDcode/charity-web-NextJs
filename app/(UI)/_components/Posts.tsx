@@ -10,14 +10,6 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api-shamel.tmt3.sa';
-
-const getImageUrl = (path: string | null | undefined): string | null => {
-  if (!path || path.trim() === '') return null;
-  const cleaned = path.replace(/^\/?storage\//, '');
-  return `${API_BASE_URL}/api/v1/news-image?path=/${cleaned}`;
-};
-
 const NewsSection = ({ data, prefetched }: { data?: any, prefetched?: { items: any[] } }) => {
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(!prefetched?.items?.length);
@@ -103,11 +95,9 @@ const NewsSection = ({ data, prefetched }: { data?: any, prefetched?: { items: a
           className="news-swiper !pb-16"
         >
           {posts.map((post) => {
-            const rawPath =
-              post.image?.original?.trim()
-                ? post.image.original
-                : post.gallery?.[0]?.original ?? null;
-            const imageUrl = getImageUrl(rawPath);
+            const imageUrl = post.image?.original?.trim()
+              ? post.image.original
+              : post.gallery?.[0]?.original ?? null;
 
             return (
               <SwiperSlide key={post.id} className="h-auto">
@@ -126,7 +116,7 @@ const NewsSection = ({ data, prefetched }: { data?: any, prefetched?: { items: a
                           لا توجد صورة
                         </div>
                       )}
-                      <div className="absolute top-5 right-5 bg-white/90 backdrop-blur-md px-4 py-2 rounded-2xl shadow-sm flex items-center gap-2 text-[#009689] font-bold text-xs">
+                      <div className="absolute top-5 right-5 bg-white/90 backdrop-blur-md px-4 py-2 rounded-2xl shadow-sm flex items-center gap-2 text-[#009689] font-bold text-xs z-10">
                         <Calendar size={14} />
                         {new Date(post.published_at || post.created_at).toLocaleDateString('ar-SA', {
                           day: 'numeric', month: 'long'
@@ -138,7 +128,7 @@ const NewsSection = ({ data, prefetched }: { data?: any, prefetched?: { items: a
                         {post.title}
                       </h3>
                       <p className="text-gray-500 text-sm line-clamp-3 mb-6 leading-relaxed">
-                        {post.summary || post.content?.replace(/<[^>]*>/g, '').substring(0, 120)}...
+                        {post.excerpt || post.content?.replace(/<[^>]*>/g, '').substring(0, 120)}...
                       </p>
                       <div className="mt-auto flex items-center justify-between">
                         <span className="flex items-center gap-2 text-sm font-bold text-[#009689] group-hover/card:gap-4 transition-all duration-300">
@@ -158,17 +148,16 @@ const NewsSection = ({ data, prefetched }: { data?: any, prefetched?: { items: a
         </Swiper>
 
         <div className="news-pagination-custom flex justify-center gap-3 mt-4" />
-<div className="news-pagination-custom flex justify-center gap-3 mt-4" />
 
-<div className="flex justify-center mt-8">
-  <Link
-    href="/posts"
-    className="px-8 py-3 rounded-full border-2 border-[#009689] text-[#009689] hover:bg-[#009689] hover:text-white font-bold text-sm transition-all duration-300"
-  >
-    عرض جميع الأخبار
-  </Link>
-</div>
-       </div>
+        <div className="flex justify-center mt-8">
+          <Link
+            href="/posts"
+            className="px-8 py-3 rounded-full border-2 border-[#009689] text-[#009689] hover:bg-[#009689] hover:text-white font-bold text-sm transition-all duration-300"
+          >
+            عرض جميع الأخبار
+          </Link>
+        </div>
+      </div>
 
       <style jsx global>{`
         .news-swiper .swiper-pagination-bullet {

@@ -1,5 +1,6 @@
 "use client";
 
+import React from 'react';
 import HeroSection from "./Hero";
 import StatisticsSection from "./Statistic";
 import NewsSection from "./Posts";
