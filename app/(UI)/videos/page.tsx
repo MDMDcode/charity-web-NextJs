@@ -6,7 +6,7 @@ const API_BASE_URL = "https://api-shamel.tmt3.sa";
 
 async function getVideos() {
   try {
-    const res = await fetch(`${API}/video-galleries`, { cache: 'no-store' });
+    const res = await fetch(`${API}/video-galleries`, { next: { revalidate: 300 } });
     const json = await res.json();
     return json?.data?.items || [];
   } catch {
@@ -16,7 +16,7 @@ async function getVideos() {
 
 async function getVideoSection() {
   try {
-    const res = await fetch(`${API}/homepage-sections`, { cache: 'no-store' });
+    const res = await fetch(`${API}/homepage-sections`, { next: { revalidate: 300 } });
     const json = await res.json();
     const sections = json?.data || [];
     return sections.find((s: any) => s.section_key === 'videos') || null;
@@ -30,6 +30,13 @@ const getYoutubeEmbed = (url: string) => {
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
   const match = url.match(regExp);
   return (match && match[2].length === 11) ? `https://www.youtube.com/embed/${match[2]}` : null;
+};
+
+const normalizeLinks = (links: any): string[] => {
+  if (!links) return [];
+  if (typeof links === 'string') return links.trim() ? [links.trim()] : [];
+  if (Array.isArray(links)) return links.filter(Boolean);
+  return [];
 };
 
 export default async function VideosPage() {
@@ -58,12 +65,16 @@ export default async function VideosPage() {
           <div className="space-y-16">
             {albums.map((album: any) => {
               const media: any[] = [];
-              album.videos?.forEach((v: any) => {
-                const url = v.url?.startsWith('http') ? v.url : `${API_BASE_URL}${v.url}`;
-                media.push({ url, type: 'video' });
-              });
-              album.links?.forEach((link: string) => {
-                if (link) media.push({ url: link, type: 'link' });
+
+              if (Array.isArray(album.videos)) {
+                album.videos.forEach((v: any) => {
+                  const url = v.url?.startsWith('http') ? v.url : `${API_BASE_URL}${v.url}`;
+                  media.push({ url, type: 'video' });
+                });
+              }
+
+              normalizeLinks(album.links).forEach((link) => {
+                media.push({ url: link, type: 'link' });
               });
 
               if (media.length === 0) return null;

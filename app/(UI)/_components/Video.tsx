@@ -48,6 +48,15 @@ const GalleryVideosCarousel = ({ data, prefetched }: { data?: any, prefetched?: 
     const getAlbumMedia = (album: any) => {
         const items: any[] = [];
 
+        // فيديوهات مباشرة — URL كامل من الـ API
+        if (Array.isArray(album?.videos)) {
+            album.videos.forEach((v: any) => {
+                const url = v.url || '';
+                if (url) items.push({ url, type: 'video', id: v.id });
+            });
+        }
+
+        // روابط يوتيوب — ممكن string أو array
         const rawLinks = album?.links;
         const linksList: string[] = !rawLinks
             ? []
@@ -56,20 +65,6 @@ const GalleryVideosCarousel = ({ data, prefetched }: { data?: any, prefetched?: 
                 : Array.isArray(rawLinks)
                     ? rawLinks.filter(Boolean)
                     : [];
-
-        if (Array.isArray(album?.videos)) {
-            album.videos.forEach((v: any) => {
-                let url = v.url || '';
-                if (!url.startsWith('http')) {
-                    let cleanPath = url.startsWith('/') ? url.substring(1) : url;
-                    if (cleanPath.startsWith('storage/')) {
-                        cleanPath = cleanPath.replace('storage/', '');
-                    }
-                    url = `${API}/fetch-secure-image?p=${cleanPath}`;
-                }
-                items.push({ url, type: 'video', id: v.id });
-            });
-        }
 
         linksList.forEach((link, index) => {
             items.push({ url: link, type: 'link', id: `link-${index}` });
@@ -127,9 +122,8 @@ const GalleryVideosCarousel = ({ data, prefetched }: { data?: any, prefetched?: 
                                             ref={(el) => { videoRefs.current[`${activeAlbum.id}-${item.id}`] = el; }}
                                             controls
                                             className="w-full h-full object-cover"
-                                            preload="auto"
+                                            preload="metadata"
                                             playsInline
-                                            crossOrigin="anonymous"
                                         >
                                             <source src={item.url} type="video/mp4" />
                                             متصفحك لا يدعم تشغيل هذا الفيديو.
