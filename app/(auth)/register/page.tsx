@@ -92,19 +92,19 @@ const verifyOtp = async () => {
 
   return (
     <div className="w-full max-w-md bg-white rounded-3xl border shadow-sm p-8">
-      <h1 className="text-2xl font-black mb-2">إنشاء حساب</h1>
-      <p className="text-gray-500 text-sm mb-8">أهلاً! سجّل بياناتك للانضمام إلينا</p>
+      <h1 className="text-2xl font-black mb-2 text-black">إنشاء حساب</h1>
+      <p className="text-sm mb-8 text-black">أهلاً! سجّل بياناتك للانضمام إلينا</p>
 
       <form onSubmit={register} className="space-y-4" autoComplete="off">
 
         <input
           type="text"
           name="name"
-          required
+          required 
           placeholder="الاسم الكامل"
           value={form.name}
           autoComplete="off"
-          className="w-full p-4 rounded-xl border bg-gray-50 outline-none focus:border-[#009689]"
+          className="w-full text-black p-4 rounded-xl border bg-gray-50 outline-none focus:border-[#009689]"
           onChange={handleChange}
         />
 
@@ -115,7 +115,7 @@ const verifyOtp = async () => {
           placeholder="رقم الجوال (05xxxxxxxx)"
           value={form.phone}
           autoComplete="off"
-          className="w-full p-4 rounded-xl border bg-gray-50 outline-none focus:border-[#009689] text-left"
+          className="w-full text-black p-4 rounded-xl border bg-gray-50 outline-none focus:border-[#009689] text-left"
           onChange={handleChange}
         />
 
@@ -127,14 +127,14 @@ const verifyOtp = async () => {
             placeholder="البريد الإلكتروني"
             value={form.email}
             autoComplete="off"
-            className="flex-1 p-4 rounded-xl border bg-gray-50 outline-none focus:border-[#009689]"
+            className="flex-1 p-4 text-black rounded-xl border bg-gray-50 outline-none focus:border-[#009689]"
             onChange={handleChange}
           />
           <button
             type="button"
             onClick={sendOtp}
             disabled={otpLoading || otpSent}
-            className="shrink-0 px-4 py-2 rounded-xl bg-[#009689] text-white text-sm font-bold disabled:opacity-60 flex items-center gap-1 whitespace-nowrap"
+            className="shrink-0 text-black px-4 py-2 rounded-xl bg-[#009689] text-sm font-bold disabled:opacity-60 flex items-center gap-1 whitespace-nowrap"
           >
             {otpLoading
               ? <Loader2 size={16} className="animate-spin" />
@@ -157,7 +157,7 @@ const verifyOtp = async () => {
               inputMode="numeric"
               value={form.otp}
               autoComplete="one-time-code"
-              className={`flex-1 p-4 rounded-xl border bg-gray-50 outline-none text-center tracking-[0.4em] text-xl font-bold transition ${
+              className={`flex-1 p-4 rounded-xl text-black border bg-gray-50 outline-none text-center tracking-[0.4em] text-xl font-bold transition ${
                 otpVerified
                   ? "border-green-400 bg-green-50"
                   : "focus:border-[#009689]"
@@ -196,7 +196,7 @@ const verifyOtp = async () => {
           placeholder="كلمة المرور (8 أحرف على الأقل)"
           value={form.password}
           autoComplete="new-password"
-          className="w-full p-4 rounded-xl border bg-gray-50 outline-none focus:border-[#009689]"
+          className="w-full p-4 text-black rounded-xl border bg-gray-50 outline-none focus:border-[#009689]"
           onChange={handleChange}
         />
 
@@ -207,7 +207,7 @@ const verifyOtp = async () => {
           placeholder="تأكيد كلمة المرور"
           value={form.password_confirmation}
           autoComplete="new-password"
-          className="w-full p-4 rounded-xl border bg-gray-50 outline-none focus:border-[#009689]"
+          className="w-full p-4 text-black rounded-xl border bg-gray-50 outline-none focus:border-[#009689]"
           onChange={handleChange}
         />
 

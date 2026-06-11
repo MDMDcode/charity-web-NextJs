@@ -2,13 +2,16 @@
 import { useState } from "react";
 import { useAuth } from "@/app/context/AuthContext";
 import Link from "next/link";
-import { Loader2, LogIn } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Loader2, LogIn, Eye, EyeOff, ArrowRight } from "lucide-react";
 
 export default function LoginPage() {
   const { login } = useAuth();
+  const router = useRouter();
   const [form,  setForm]  = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [busy,  setBusy]  = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,24 +28,44 @@ export default function LoginPage() {
 
   return (
     <div className="w-full max-w-md bg-white rounded-3xl border shadow-sm p-8">
+
+      <button
+        type="button"
+        onClick={() => window.location.href = "https://demo-shamel.tmt3.sa"}
+        className="flex items-center gap-2 text-gray-500 hover:text-[#009689] transition-colors mb-4"
+      >
+        <ArrowRight size={18} />
+        العودة
+      </button>
+
       <h1 className="text-2xl font-black mb-2 text-black">تسجيل الدخول</h1>
-      <p className="text-gray-500 text-sm mb-8">أهلاً بعودتك 👋</p>
+      <p className="text-sm mb-8 text-black">أهلاً بعودتك 👋</p>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="email"
           required
           placeholder="البريد الإلكتروني"
-          className="w-full p-4 rounded-xl border bg-gray-50 outline-none focus:border-[#009689]"
+          className="w-full p-4 rounded-xl border text-black bg-gray-50 outline-none focus:border-[#009689]"
           onChange={e => setForm({ ...form, email: e.target.value })}
         />
-        <input
-          type="password"
-          required
-          placeholder="كلمة المرور"
-          className="w-full p-4 rounded-xl border bg-gray-50 outline-none focus:border-[#009689]"
-          onChange={e => setForm({ ...form, password: e.target.value })}
-        />
+
+        <div className="relative">
+          <input
+            type={showPassword ? "text" : "password"}
+            required
+            placeholder="كلمة المرور"
+            className="w-full p-4 rounded-xl text-black border bg-gray-50 outline-none focus:border-[#009689] pr-12"
+            onChange={e => setForm({ ...form, password: e.target.value })}
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+          >
+            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+          </button>
+        </div>
 
         {error && (
           <p className="text-red-500 text-sm bg-red-50 p-3 rounded-xl">{error}</p>
@@ -71,4 +94,4 @@ export default function LoginPage() {
       </div>
     </div>
   );
-}   
+}

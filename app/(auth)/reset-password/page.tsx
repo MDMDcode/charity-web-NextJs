@@ -46,8 +46,8 @@ function ResetForm() {
   if (!tokenValid) return (
     <div className="w-full max-w-md bg-white rounded-3xl border shadow-sm p-8 text-center">
       <XCircle size={60} className="text-red-400 mx-auto mb-4" />
-      <h1 className="text-xl font-black mb-2">الرابط غير صالح</h1>
-      <p className="text-gray-500 text-sm">انتهت صلاحية الرابط أو تم استخدامه مسبقاً.</p>
+      <h1 className="text-xl font-black mb-2 text-black">الرابط غير صالح</h1>
+      <p className="text-black text-sm">انتهت صلاحية الرابط أو تم استخدامه مسبقاً.</p>
     </div>
   );
 
@@ -55,28 +55,28 @@ function ResetForm() {
     <div className="w-full max-w-md bg-white rounded-3xl border shadow-sm p-8 text-center">
       <CheckCircle2 size={60} className="text-[#009689] mx-auto mb-4" />
       <h1 className="text-xl font-black mb-2">تم تغيير كلمة المرور!</h1>
-      <p className="text-gray-500 text-sm">جاري توجيهك لتسجيل الدخول...</p>
+      <p className="text-black text-sm">جاري توجيهك لتسجيل الدخول...</p>
     </div>
   );
 
   return (
     <div className="w-full max-w-md bg-white rounded-3xl border shadow-sm p-8">
-      <h1 className="text-2xl font-black mb-2">كلمة مرور جديدة</h1>
-      <p className="text-gray-500 text-sm mb-8">اختر كلمة مرور قوية</p>
+      <h1 className="text-2xl font-black mb-2 text-black">كلمة مرور جديدة</h1>
+      <p className="text-black text-sm mb-8">اختر كلمة مرور قوية</p>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="password"
           required
           placeholder="كلمة المرور الجديدة"
-          className="w-full p-4 rounded-xl border bg-gray-50 outline-none focus:border-[#009689]"
+          className="w-full p-4 text-black rounded-xl border bg-gray-50 outline-none focus:border-[#009689]"
           onChange={e => setForm({ ...form, password: e.target.value })}
         />
         <input
           type="password"
-          required
+          required  
           placeholder="تأكيد كلمة المرور"
-          className="w-full p-4 rounded-xl border bg-gray-50 outline-none focus:border-[#009689]"
+          className="w-full text-black p-4 rounded-xl border bg-gray-50 outline-none focus:border-[#009689]"
           onChange={e => setForm({ ...form, password_confirmation: e.target.value })}
         />
         {error && (
