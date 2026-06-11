@@ -25,7 +25,7 @@ export default function LoginPage() {
 
   return (
     <div className="w-full max-w-md bg-white rounded-3xl border shadow-sm p-8">
-      <h1 className="text-2xl font-black mb-2">تسجيل الدخول</h1>
+      <h1 className="text-2xl font-black mb-2 text-black">تسجيل الدخول</h1>
       <p className="text-gray-500 text-sm mb-8">أهلاً بعودتك 👋</p>
 
       <form onSubmit={handleSubmit} className="space-y-4">
