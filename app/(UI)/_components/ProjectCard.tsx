@@ -4,32 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import CartToast from "./CartToast";
-
-interface Share {
-  title: string;
-  price: number;
-}
-
-interface Project {
-  id: string;
-  title: string;
-  slug: string;
-  image_url: string;
-  pricing: {
-    is_open_price: boolean;
-    default_price: string;
-    has_shares: boolean;
-    shares: Share[];
-    min_price: number | null;
-    suggested_amount: number | null;
-  };
-  target: {
-    has_target: boolean;
-    goal_amount: string;
-    collected_amount: string;
-    percentage: number;
-  };
-}
+import { Project, Share } from "@/app/(UI)/types/project";
 
 export default function ProjectCard({ project }: { project: Project }) {
   const pricing  = project.pricing;
