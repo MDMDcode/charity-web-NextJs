@@ -42,8 +42,8 @@ export default function CartPage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto py-16 px-6" dir="rtl">
-      <h1 className="text-3xl font-black mb-10 text-gray-800">سلة التبرعات</h1>
+    <div className="  bg-white mx-auto py-16 px-6 " dir="rtl ">
+      <h1 className="text-3xl font-black mb-10 text-gray-800  ">سلة التبرعات</h1>
 
       {items.length === 0 ? (
         <div className="text-center py-20 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
@@ -57,7 +57,7 @@ export default function CartPage() {
           </Link>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-4 ">
           {items.map((item, index) => (
             <div
               key={`${item.project_id}-${index}`}
@@ -85,7 +85,7 @@ export default function CartPage() {
               {/* زر الحذف */}
               <button
                 onClick={() => removeItem(item.project_id)}
-                className="p-3 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-full transition-all"
+                className="p-3 text-black hover:text-red-500 hover:bg-red-50 rounded-full transition-all"
                 title="حذف من السلة"
               >
                 <Trash2 size={20} />
@@ -94,21 +94,21 @@ export default function CartPage() {
           ))}
 
           {/* ملخص وزر الدفع */}
-          <div className="mt-10 p-8 bg-white border border-gray-100 rounded-3xl shadow-sm">
+          <div className="mt-10 p-8 bg-white text-black border border-gray-100 rounded-3xl shadow-sm">
             <div className="flex justify-between items-center mb-8">
-              <span className="text-lg font-bold text-gray-500">إجمالي مبلغ التبرع:</span>
+              <span className="text-lg font-bold text-black ">إجمالي مبلغ التبرع:</span>
               <div className="text-[#009689] flex items-baseline gap-1">
-                <span className="text-3xl font-black">
+                <span className="text-3xl text-black font-black">
                   {totalAmount.toLocaleString("ar-SA")}
                 </span>
-                <span className="text-sm font-bold">ر.س</span>
+                <span className="text-sm font-bold text-black">ر.س</span>
               </div>
             </div>
 
             <button
               onClick={handleGoToCheckout}
               disabled={items.length === 0}
-              className="w-full bg-[#009689] text-white py-5 rounded-2xl font-black text-xl hover:bg-[#0b6e65] transition-all shadow-xl shadow-teal-100 active:scale-[0.98] disabled:opacity-60"
+              className="w-full bg-[#009689] text-black py-5 rounded-2xl font-black text-xl hover:bg-[#0b6e65] transition-all shadow-xl shadow-teal-100 active:scale-[0.98] disabled:opacity-60"
             >
               إتمام التبرع
             </button>

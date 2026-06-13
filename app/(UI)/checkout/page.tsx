@@ -106,7 +106,7 @@ function CheckoutForm() {
 
         {/* نموذج البيانات */}
         <div className="lg:col-span-7 bg-white p-8 rounded-3xl border shadow-sm">
-          <h2 className="text-xl font-black mb-6">بيانات المتبرع</h2>
+          <h2 className="text-xl font-black mb-6 text-black">بيانات المتبرع</h2>
 
           {user ? (
             <div className="flex items-center gap-4 bg-green-50 border border-green-200 rounded-2xl p-4 mb-6">
@@ -134,14 +134,14 @@ function CheckoutForm() {
               <input
                 type="text"
                 placeholder="الاسم الكامل (اختياري)"
-                className="w-full p-4 rounded-xl border bg-gray-50 outline-none focus:border-[#009689]"
+                className="w-full text-black p-4 rounded-xl border bg-gray-50 outline-none focus:border-[#009689]"
                 onChange={e => setForm({ ...form, donor_name: e.target.value })}
               />
               <input
                 type="tel"
                 required
                 placeholder="رقم الجوال (05xxxxxxxx)"
-                className="w-full p-4 rounded-xl border bg-gray-50 outline-none focus:border-[#009689] text-left"
+                className="w-full p-4 text-black rounded-xl border bg-gray-50 outline-none focus:border-[#009689] text-left"
                 onChange={e => setForm({ ...form, donor_phone: e.target.value })}
               />
             </div>
@@ -164,7 +164,7 @@ function CheckoutForm() {
 
         {/* ملخص السلة */}
         <div className="lg:col-span-5 bg-white p-6 rounded-3xl border shadow-sm h-fit">
-          <h2 className="font-bold mb-4 border-b pb-2">محتويات السلة</h2>
+          <h2 className="font-bold mb-4 border-b pb-2 text-black">محتويات السلة</h2>
           <div className="space-y-4">
             {cartItems.length > 0 ? cartItems.map((item, index) => (
               <div key={index} className="flex items-center gap-4 bg-gray-50 p-3 rounded-2xl">
@@ -177,7 +177,7 @@ function CheckoutForm() {
                 </div>
               </div>
             )) : (
-              <p className="text-gray-400 text-center py-4">السلة فارغة</p>
+              <p className="text-black text-center py-4">السلة فارغة</p>
             )}
           </div>
         </div>
