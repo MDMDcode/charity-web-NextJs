@@ -49,7 +49,7 @@ function ProjectsContent() {
             <h1 className="text-4xl font-black text-gray-900">مشاريع {catName}</h1>
             <p className="text-gray-500 mt-2">{projects.length} مشروع متاح</p>
           </div>
-          <Link href="/" className="border-2 border-[#009689] text-[#009689] hover:bg-[#009689] hover:text-white font-bold px-6 py-2.5 rounded-xl transition">
+          <Link href="/https://demo-shamel.tmt3.sa/store" className="border-2 border-[#009689] text-[#009689] hover:bg-[#009689] hover:text-white font-bold px-6 py-2.5 rounded-xl transition">
             العودة للرئيسية
           </Link>
         </div>

@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import CartToast from "./CartToast";
 import { Project, Share } from "@/app/(UI)/types/project";
 
@@ -72,9 +71,8 @@ export default function ProjectCard({ project }: { project: Project }) {
   };
 
   return (
-    <div className="relative flex-shrink-0 w-full sm:w-[350px]" dir="rtl">
+    <div className="relative flex-shrink-0 w-[300px]" dir="rtl">
 
-      {/* loading overlay */}
       {navigating && (
         <div className="absolute inset-0 z-50 bg-white/80 backdrop-blur-sm rounded-2xl flex items-center justify-center">
           <div className="w-8 h-8 border-4 border-[#009689] border-t-transparent rounded-full animate-spin" />
@@ -95,12 +93,14 @@ export default function ProjectCard({ project }: { project: Project }) {
 
         {/* الصورة */}
         <div onClick={handleNavigate} className="cursor-pointer">
-          <div className="relative aspect-[16/10] overflow-hidden">
-            <img
-              src={project.image_url}
-              alt={project.title}
-              className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-            />
+          <div className="relative aspect-[16/10] overflow-hidden bg-gray-100">
+            {project.image_url && (
+              <img
+                src={project.image_url}
+                alt={project.title}
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+              />
+            )}
             <div className="absolute top-3 right-3 bg-black/50 text-white text-[10px] px-2 py-1 rounded-md backdrop-blur-sm font-bold">
               {project.title}
             </div>
@@ -109,7 +109,6 @@ export default function ProjectCard({ project }: { project: Project }) {
 
         <div className="p-5 flex flex-col flex-grow">
 
-          {/* العنوان */}
           <div onClick={handleNavigate} className="cursor-pointer">
             <h3 className="text-lg font-bold text-black mb-4 line-clamp-1 hover:text-[#009689] transition-colors">
               {project.title}
@@ -153,8 +152,8 @@ export default function ProjectCard({ project }: { project: Project }) {
                     onClick={() => handleSelectShare(share)}
                     className={`flex items-center justify-between p-2.5 rounded-xl border-2 transition-all text-right ${
                       selectedShare?.title === share.title
-                        ? 'border-[#009689] bg-[#009689]/5'
-                        : 'border-gray-100 hover:border-[#009689]/40'
+                        ? "border-[#009689] bg-[#009689]/5"
+                        : "border-gray-100 hover:border-[#009689]/40"
                     }`}
                   >
                     <span className="font-bold text-black text-sm">{share.title}</span>
@@ -165,7 +164,7 @@ export default function ProjectCard({ project }: { project: Project }) {
             </div>
           )}
 
-          {/* حقل المبلغ — يظهر فقط إذا open price أو ما في أسهم */}
+          {/* حقل المبلغ */}
           {(pricing?.is_open_price || !pricing?.has_shares) && (
             <div className="mb-4">
               <label className="block text-xs text-black mb-2 font-medium italic">
@@ -205,7 +204,6 @@ export default function ProjectCard({ project }: { project: Project }) {
                 <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
             </button>
-
             <button
               onClick={handleDonateNow}
               className="flex-1 bg-[#009689] text-white font-bold py-3 rounded-xl hover:bg-[#0b6e65] active:scale-[0.98] transition-all shadow-lg shadow-[#009689]/20"
@@ -213,6 +211,7 @@ export default function ProjectCard({ project }: { project: Project }) {
               تبرع الآن
             </button>
           </div>
+
         </div>
       </div>
     </div>

@@ -2,6 +2,7 @@ import TopHeader from "./_components/TopHeader";
 import NavBar from "./_components/NavBar";
 import Footer from "./_components/Footer";
 import WhatsAppWidget from "./_components/WhatsAppWidget";
+import NavigationLoaderWrapper from "@/app/(UI)/loading/NavigationLoaderWrapper";
 
 import "../globals.css";
 
@@ -38,13 +39,16 @@ export default async function FrontEndLayout({ children }: { children: React.Rea
 
   return (
     <>
+      {/* ← هنا خارج كل شي عشان يغطي الشاشة كاملة */}
+      <NavigationLoaderWrapper />
+
       <TopHeader logo={logo} />
       <NavBar />
       <main>
         {children}
       </main>
       <Footer />
-       <WhatsAppWidget />
+      <WhatsAppWidget />
     </>
   );
 }
