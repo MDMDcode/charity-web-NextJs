@@ -47,7 +47,7 @@ export default async function Store() {
     <>
       <StoreHeroSlider prefetched={{ slides: storeSlides }} />
       <StoreStatisticsSection prefetched={{ items: storeStats }} />
-      <ProjectCategoriesPage prefetched={{ items: categories }} />
+      <ProjectCategoriesPage />
     </>
   );
 }
