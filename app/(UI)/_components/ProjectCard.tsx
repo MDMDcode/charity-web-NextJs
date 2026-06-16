@@ -9,7 +9,8 @@ interface ProjectWithCategory extends Project {
   category?: {
     id: string;
     name: string;
-    slug: string;
+    slug?: string | null; // 👈 جعلناه اختياري ليتوافق مع النوع الآخر
+    description?: string | null;
   };
 }
 
