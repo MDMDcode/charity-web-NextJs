@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import StoreHeroSlider from '../_components/StoreHero';
 import ProjectCategoriesPage from '../_components/ProjectCategory';
 import StoreStatisticsSection from '../_components/StoreStatistic';
@@ -9,7 +10,6 @@ async function fetchData(endpoint: string) {
     const res = await fetch(`${API}/${endpoint}`, { next: { revalidate: 60 } });
     if (!res.ok) return [];
     const json = await res.json();
-    console.log(`fetchData(${endpoint}):`, JSON.stringify(json?.data));
     return json.data?.items || json.data?.data || json.data || [];
   } catch {
     return [];
@@ -37,17 +37,32 @@ async function fetchCategories() {
 }
 
 export default async function Store() {
-  const [storeSlides, storeStats, categories] = await Promise.all([
+  const [storeSlides, storeStats] = await Promise.all([
     fetchData('store-hero-slides'),
     fetchData('store-statistics'),
-    fetchCategories(),
   ]);
 
   return (
     <>
-      <StoreHeroSlider prefetched={{ slides: storeSlides }} />
-      <StoreStatisticsSection prefetched={{ items: storeStats }} />
-      <ProjectCategoriesPage />
+      <Suspense fallback={null}>
+        <StoreHeroSlider prefetched={{ slides: storeSlides }} />
+      </Suspense>
+
+      <Suspense fallback={
+        <section className="py-10 bg-white border-y border-gray-100" dir="rtl">
+          <div className="container mx-auto px-4 max-w-7xl" />
+        </section>
+      }>
+        <StoreStatisticsSection prefetched={{ items: storeStats }} />
+      </Suspense>
+
+      <Suspense fallback={
+        <section className="py-16 bg-white" dir="rtl">
+          <div className="container mx-auto px-6 max-w-7xl" />
+        </section>
+      }>
+        <ProjectCategoriesPage />
+      </Suspense>
     </>
   );
 }

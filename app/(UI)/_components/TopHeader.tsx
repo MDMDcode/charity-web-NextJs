@@ -1,3 +1,4 @@
+// app/(UI)/_components/TopHeader.tsx
 "use client";
 import { FaUser, FaShoppingCart } from "react-icons/fa";
 import Link from "next/link";
@@ -6,6 +7,34 @@ import { useAuth } from "@/app/context/AuthContext";
 import { LogOut, User } from "lucide-react";
 
 const API_BASE_URL = "https://api-shamel.tmt3.sa/api/v1";
+
+function CartBadge() {
+  const [count, setCount] = useState(0);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const update = () => {
+      try {
+        const cart = JSON.parse(localStorage.getItem("tmt_cart") || "[]");
+        setCount(cart.length);
+      } catch {
+        setCount(0);
+      }
+    };
+    setMounted(true);
+    update();
+    window.addEventListener("cart-updated", update);
+    return () => window.removeEventListener("cart-updated", update);
+  }, []);
+
+  if (!mounted || count === 0) return null;
+
+  return (
+    <span className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white text-xs font-black rounded-full flex items-center justify-center">
+      {count > 9 ? "9+" : count}
+    </span>
+  );
+}
 
 export default function TopHeader({ logo: initialLogo }: { logo?: string | null }) {
   const { user, loading, logout } = useAuth();
@@ -34,18 +63,20 @@ export default function TopHeader({ logo: initialLogo }: { logo?: string | null 
   return (
     <div>
       <div dir="rtl" className="bg-[#F8F8F8] h-22 flex items-center justify-between px-8 border-b border-gray-200">
-
-        <div className="flex items-center ">
+        <div className="flex items-center">
           {logo ? (
-            <Link href="https://demo-shamel.tmt3.sa/"><img src={logo} alt="شعار الجمعية" className="h-20 object-contain" /></Link>
+            <Link href="https://demo-shamel.tmt3.sa/">
+              <img src={logo} alt="شعار الجمعية" className="h-20 object-contain" />
+            </Link>
           ) : (
             <div className="h-10 w-24 bg-gray-200 animate-pulse rounded" />
           )}
         </div>
 
         <div className="flex items-center gap-4">
-          <Link href="/sales" className="flex items-center gap-2 bg-[#009689] px-4 py-2 rounded-md hover:opacity-80 transition">
+          <Link href="/sales" className="relative flex items-center gap-2 bg-[#009689] px-4 py-2 rounded-md hover:opacity-80 transition">
             <FaShoppingCart size={20} className="text-white" />
+            <CartBadge />
           </Link>
 
           {loading ? (

@@ -7,22 +7,37 @@ import Link from 'next/link';
 import apiClient from "@/app/lib/api";
 import { useAuth } from "@/app/context/AuthContext";
 
+// المكون المحدث بناءً على طلبك بعد نجاح عملية التبرع
 function SuccessView({ name }: { name: string }) {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center" dir="rtl">
-      <CheckCircle2 size={80} className="text-[#009689] mb-4" />
-      <h1 className="text-2xl font-bold">شكراً لك {name || "فاعل خير"} 🎉</h1>
-      <p className="text-gray-500 mt-2">تم تسجيل تبرعك بنجاح.</p>
-      <div className="flex gap-3 mt-6">
+    <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-center" dir="rtl">
+      {/* 1. نفس الأيقونة الدائرية مع علامة صح */}
+      <CheckCircle2 size={80} className="text-[#009689] mb-6" />
+      
+      {/* 2. بارك الله في عطائك ... اسم الشخص... ايموجي قلب */}
+      <h1 className="text-2xl font-black text-gray-900 mb-2">
+        بارك الله في عطائك {name || "فاعل خير"} ❤️
+      </h1>
+      
+      {/* 3. تم تسجيل تبرعك بنجاح */}
+      <p className="text-base text-gray-600 mb-4">تم تسجيل تبرعك بنجاح</p>
+      
+      {/* 4. ((ما نقصت صدقة من مال)) */}
+      <p className="text-lg font-bold text-gray-900 mb-8">
+        ((ما نقصت صدقةٌ من مالٍ))
+      </p>
+      
+      {/* 5. نفس الأزرار الموجودة حالياً */}
+      <div className="flex gap-3">
         <Link
           href="/store"
-          className="bg-[#009689] text-white px-8 py-3 rounded-xl font-bold"
+          className="bg-[#009689] text-white px-8 py-3 rounded-xl font-bold hover:bg-[#0b6e65] transition-colors"
         >
           تبرع مجدداً
         </Link>
         <Link
           href="/"
-          className="bg-gray-100 text-gray-700 px-8 py-3 rounded-xl font-bold"
+          className="bg-gray-100 text-gray-700 px-8 py-3 rounded-xl font-bold hover:bg-gray-200 transition-colors"
         >
           الرئيسية
         </Link>
@@ -32,8 +47,8 @@ function SuccessView({ name }: { name: string }) {
 }
 
 function CheckoutForm() {
-  const searchParams                   = useSearchParams();
-  const amountFromUrl                  = searchParams.get('amount') || "0";
+  const searchParams                               = useSearchParams();
+  const amountFromUrl                              = searchParams.get('amount') || "0";
   const { user, loading: authLoading } = useAuth();
 
   const [form,      setForm]      = useState({ donor_name: "", donor_phone: "" });
