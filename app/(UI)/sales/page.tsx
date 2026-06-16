@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Trash2, ShoppingCart } from "lucide-react";
+import { Trash2, ShoppingCart , User } from "lucide-react";
 
 interface CartItem {
   project_id: string;
@@ -69,12 +69,12 @@ export default function CartPage() {
             
             <div className="divide-y divide-gray-50 text-right text-sm">
               <a href="/login" className="flex items-center gap-2.5 p-4 text-slate-700 hover:bg-slate-50 transition-colors font-medium">
-                <span className="text-[#009689] text-base">👤</span>
+                <User size={22} className="text-[#009689]" />
                 <span>تسجيل الدخول أو جديد</span>
               </a>
               <div className="flex items-center justify-between p-4 bg-slate-50/50 border-r-4 border-[#009689] text-[#009689] font-bold">
                 <div className="flex items-center gap-2.5">
-                  <span>🛒</span>
+                  <ShoppingCart size={22} className="text-[#009689]" />
                   <span>سلة التبرعات</span>
                 </div>
                 <span className="bg-[#009689] text-white text-xs px-2 py-0.5 rounded-full">{items.length}</span>
