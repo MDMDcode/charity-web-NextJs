@@ -31,8 +31,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const t = localStorage.getItem("token");
     const u = localStorage.getItem("user");
     if (t && u) {
-      setToken(t);
-      setUser(JSON.parse(u));
+      try {
+        setToken(t);
+        setUser(JSON.parse(u));
+      } catch {
+        // بيانات تالفة — نظّف
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+      }
     }
     setLoading(false);
   }, []);

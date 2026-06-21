@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Trash2, ShoppingCart , User } from "lucide-react";
+import { Trash2, ShoppingCart, User, UserPlus, Home, History } from "lucide-react";
+import { useAuth } from "@/app/context/AuthContext";
 
 interface CartItem {
   project_id: string;
@@ -14,6 +14,7 @@ interface CartItem {
 
 export default function CartPage() {
   const [items, setItems] = useState<CartItem[]>([]);
+  const { user, loading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -28,7 +29,7 @@ export default function CartPage() {
   }, []);
 
   const removeItem = (project_id: string) => {
-    const updated = items.filter(item => item.project_id !== project_id);
+    const updated = items.filter((item) => item.project_id !== project_id);
     setItems(updated);
     localStorage.setItem("tmt_cart", JSON.stringify(updated));
     window.dispatchEvent(new Event("cart-updated"));
@@ -36,7 +37,6 @@ export default function CartPage() {
 
   const totalAmount = items.reduce((sum, item) => sum + item.amount, 0);
 
-  // إعادة تفعيل دالة الانتقال لصفحة الدفع
   const handleGoToCheckout = () => {
     if (items.length === 0) return;
     router.push(`/checkout?amount=${totalAmount}`);
@@ -44,7 +44,7 @@ export default function CartPage() {
 
   return (
     <div className="bg-[#F8FAFB] min-h-screen py-10 px-4 md:px-6" dir="rtl">
-      {/* مسار الصفحة العلوي (Breadcrumbs) */}
+      {/* Breadcrumbs */}
       <div className="max-w-7xl mx-auto flex justify-between items-center text-xs text-gray-400 mb-6 font-medium">
         <div className="flex gap-1.5">
           <a href="/" className="hover:text-gray-600">الرئيسية</a> /
@@ -53,10 +53,8 @@ export default function CartPage() {
       </div>
 
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        
 
-        
-        {/* القسم الأيسر: بطاقة حساب المستخدم الترحيبية الثابتة */}
+        {/* القسم الأيسر */}
         <div className="lg:col-span-3 space-y-4">
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden text-center">
             <div className="bg-[#E6F0F0] p-6 flex flex-col items-center">
@@ -66,28 +64,77 @@ export default function CartPage() {
                 </svg>
               </div>
             </div>
-            
+
             <div className="divide-y divide-gray-50 text-right text-sm">
-              <a href="/login" className="flex items-center gap-2.5 p-4 text-slate-700 hover:bg-slate-50 transition-colors font-medium">
-                <User size={22} className="text-[#009689]" />
-                <span>تسجيل الدخول أو جديد</span>
-              </a>
+
+              {loading ? (
+                <div className="p-4 space-y-3">
+                  <div className="h-8 bg-gray-100 animate-pulse rounded-lg" />
+                  <div className="h-8 bg-gray-100 animate-pulse rounded-lg" />
+                </div>
+              ) : user ? (
+                // ✅ مسجل دخول: الرئيسية + سجل التبرعات
+                <>
+                  <a
+                    href="/"
+                    className="flex items-center gap-2.5 p-4 text-slate-700 hover:bg-slate-50 transition-colors font-medium"
+                  >
+                    <Home size={22} className="text-[#009689]" />
+                    <span>الرئيسية</span>
+                  </a>
+                  <a
+                    href="/profile"
+                    className="flex items-center gap-2.5 p-4 text-slate-700 hover:bg-slate-50 transition-colors font-medium"
+                  >
+                    <History size={22} className="text-[#009689]" />
+                    <span>سجل التبرعات</span>
+                  </a>
+                </>
+              ) : (
+                // ❌ غير مسجل: الرئيسية + تسجيل الدخول + إنشاء حساب
+                <>
+                  <a
+                    href="/"
+                    className="flex items-center gap-2.5 p-4 text-slate-700 hover:bg-slate-50 transition-colors font-medium"
+                  >
+                    <Home size={22} className="text-[#009689]" />
+                    <span>الرئيسية</span>
+                  </a>
+                  <a
+                    href="/login"
+                    className="flex items-center gap-2.5 p-4 text-slate-700 hover:bg-slate-50 transition-colors font-medium"
+                  >
+                    <User size={22} className="text-[#009689]" />
+                    <span>تسجيل الدخول</span>
+                  </a>
+                  <a
+                    href="/register"
+                    className="flex items-center gap-2.5 p-4 text-slate-700 hover:bg-slate-50 transition-colors font-medium"
+                  >
+                    <UserPlus size={22} className="text-[#009689]" />
+                    <span>إنشاء حساب</span>
+                  </a>
+                </>
+              )}
+
+              {/* سلة التبرعات — تظهر دائماً */}
               <div className="flex items-center justify-between p-4 bg-slate-50/50 border-r-4 border-[#009689] text-[#009689] font-bold">
                 <div className="flex items-center gap-2.5">
                   <ShoppingCart size={22} className="text-[#009689]" />
                   <span>سلة التبرعات</span>
                 </div>
-                <span className="bg-[#009689] text-white text-xs px-2 py-0.5 rounded-full">{items.length}</span>
+                <span className="bg-[#009689] text-white text-xs px-2 py-0.5 rounded-full">
+                  {items.length}
+                </span>
               </div>
+
             </div>
           </div>
         </div>
 
-
-        {/* القسم الأيمن: السلة والجدول الرئيسي */}
+        {/* القسم الأيمن: الجدول */}
         <div className="lg:col-span-9 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-          
-          {/* عنوان السلة */}
+
           <div className="p-5 border-b border-gray-100 flex items-center gap-2 bg-white">
             <ShoppingCart size={22} className="text-[#009689]" />
             <h1 className="text-lg font-black text-slate-800">سلة التبرعات</h1>
@@ -124,19 +171,16 @@ export default function CartPage() {
                         <td className="p-4 w-24">
                           <div className="w-16 h-16 rounded-xl overflow-hidden bg-gray-50 border border-gray-100 shrink-0">
                             <img
-                              src={item.image || '/de.jpg'}
+                              src={item.image || "/de.jpg"}
                               alt={item.title}
                               className="w-full h-full object-cover"
                             />
                           </div>
                         </td>
-                        <td className="p-4 font-bold text-slate-900 max-w-xs">
-                          {item.title}
-                        </td>
+                        <td className="p-4 font-bold text-slate-900 max-w-xs">{item.title}</td>
                         <td className="p-4 text-center font-bold text-gray-400 whitespace-nowrap">
                           {item.amount.toLocaleString("ar-SA")} ر.س
                         </td>
-                        {/* تعديل الكمية لتظهر رقم عادي 1 كالعادة في السلات بدون علامة الصح الزائدة */}
                         <td className="p-4 text-center w-24">
                           <div className="inline-block bg-gray-50 border border-gray-100 rounded-xl px-4 py-2 font-bold text-slate-800 text-sm">
                             1
@@ -159,10 +203,7 @@ export default function CartPage() {
                 </table>
               </div>
 
-              {/* الجزء السفلي المعاد ترتيبه: الإجمالي + زر الإتمام الفعلي */}
               <div className="mt-8 pt-6 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                
-                {/* عرض الإجمالي الإجمالي */}
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-bold text-gray-400">المبلغ الإجمالي هو:</span>
                   <span className="text-2xl font-black text-slate-900">
@@ -170,21 +211,17 @@ export default function CartPage() {
                   </span>
                   <span className="text-xs font-bold text-gray-400">ر.س</span>
                 </div>
-
-                {/* زر إتمام التبرع الأساسي الذي حُذف خطأً */}
                 <button
                   onClick={handleGoToCheckout}
                   disabled={items.length === 0}
-                  className="bg-[#009689] text-white px-10 py-3 py-3.5 rounded-xl font-black text-base hover:bg-[#0b6e65] transition-all shadow-md active:scale-95 disabled:opacity-50"
+                  className="bg-[#009689] text-white px-10 py-3.5 rounded-xl font-black text-base hover:bg-[#0b6e65] transition-all shadow-md active:scale-95 disabled:opacity-50"
                 >
                   إتمـام التبـرع
                 </button>
-
               </div>
             </div>
           )}
         </div>
-
 
       </div>
     </div>
