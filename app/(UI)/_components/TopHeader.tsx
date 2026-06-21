@@ -4,7 +4,7 @@ import { FaUser, FaShoppingCart } from "react-icons/fa";
 import Link from "next/link";
 import { useEffect, useState, useRef } from "react";
 import { useAuth } from "@/app/context/AuthContext";
-import { LogOut, User, Home, History } from "lucide-react";
+import { LogOut, User, History } from "lucide-react";
 
 const API_BASE_URL = "https://api-shamel.tmt3.sa/api/v1";
 
@@ -86,14 +86,6 @@ export default function TopHeader({ logo: initialLogo }: { logo?: string | null 
           ) : user ? (
             // ✅ مسجل دخول: الرئيسية + سجل التبرعات + سلة + اسم المستخدم
             <>
-              <Link
-                href="/"
-                className="flex items-center gap-2 bg-[#009689] px-4 py-2 rounded-md hover:opacity-80 transition"
-              >
-                <Home size={18} className="text-white" />
-                <span className="text-white text-sm font-bold">الرئيسية</span>
-              </Link>
-
               <Link
                 href="/profile"
                 className="flex items-center gap-2 bg-[#009689] px-4 py-2 rounded-md hover:opacity-80 transition"

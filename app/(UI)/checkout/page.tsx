@@ -2,43 +2,25 @@
 
 import { useSearchParams } from 'next/navigation';
 import { useState, useEffect, Suspense } from 'react';
-import { CheckCircle2, ShieldCheck, Loader2, User, LogIn } from 'lucide-react';
+import { CheckCircle2, ShieldCheck, Loader2, User, LogIn, Gift, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import apiClient from "@/app/lib/api";
 import { useAuth } from "@/app/context/AuthContext";
 
-// المكون المحدث بناءً على طلبك بعد نجاح عملية التبرع
 function SuccessView({ name }: { name: string }) {
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-center" dir="rtl">
-      {/* 1. نفس الأيقونة الدائرية مع علامة صح */}
       <CheckCircle2 size={80} className="text-[#009689] mb-6" />
-      
-      {/* 2. بارك الله في عطائك ... اسم الشخص... ايموجي قلب */}
       <h1 className="text-2xl font-black text-gray-900 mb-2">
         بارك الله في عطائك {name || "فاعل خير"} ❤️
       </h1>
-      
-      {/* 3. تم تسجيل تبرعك بنجاح */}
       <p className="text-base text-gray-600 mb-4">تم تسجيل تبرعك بنجاح</p>
-      
-      {/* 4. ((ما نقصت صدقة من مال)) */}
-      <p className="text-lg font-bold text-gray-900 mb-8">
-        ((ما نقصت صدقةٌ من مالٍ))
-      </p>
-      
-      {/* 5. نفس الأزرار الموجودة حالياً */}
+      <p className="text-lg font-bold text-gray-900 mb-8">((ما نقصت صدقةٌ من مالٍ))</p>
       <div className="flex gap-3">
-        <Link
-          href="/store"
-          className="bg-[#009689] text-white px-8 py-3 rounded-xl font-bold hover:bg-[#0b6e65] transition-colors"
-        >
+        <Link href="/store" className="bg-[#009689] text-white px-8 py-3 rounded-xl font-bold hover:bg-[#0b6e65] transition-colors">
           تبرع مجدداً
         </Link>
-        <Link
-          href="/"
-          className="bg-gray-100 text-gray-700 px-8 py-3 rounded-xl font-bold hover:bg-gray-200 transition-colors"
-        >
+        <Link href="/" className="bg-gray-100 text-gray-700 px-8 py-3 rounded-xl font-bold hover:bg-gray-200 transition-colors">
           الرئيسية
         </Link>
       </div>
@@ -47,14 +29,20 @@ function SuccessView({ name }: { name: string }) {
 }
 
 function CheckoutForm() {
-  const searchParams                               = useSearchParams();
-  const amountFromUrl                              = searchParams.get('amount') || "0";
+  const searchParams           = useSearchParams();
+  const amountFromUrl          = searchParams.get('amount') || "0";
   const { user, loading: authLoading } = useAuth();
 
   const [form,      setForm]      = useState({ donor_name: "", donor_phone: "" });
   const [cartItems, setCartItems] = useState<any[]>([]);
   const [loading,   setLoading]   = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+
+  // حالة الإهداء
+  const [isGift,      setIsGift]      = useState(false);
+  const [giftName,    setGiftName]    = useState("");
+  const [giftPhone,   setGiftPhone]   = useState("");
+  const [giftMessage, setGiftMessage] = useState("");
 
   useEffect(() => {
     const data = localStorage.getItem("tmt_cart");
@@ -66,34 +54,33 @@ function CheckoutForm() {
 
     if (!user && !form.donor_phone) return alert("رقم الجوال مطلوب");
     if (cartItems.length === 0) return alert("السلة فارغة!");
+    if (isGift && (!giftName || !giftPhone)) return alert("يرجى إدخال اسم ورقم هاتف المُهدى إليه");
 
     setLoading(true);
     try {
-      const body = user
-        ? {
-            items: cartItems.map(item => ({
-              project_id: item.project_id,
-              amount:     item.amount,
-            })),
-          }
-        : {
-            donor_name:  form.donor_name || "فاعل خير",
-            donor_phone: form.donor_phone,
-            items: cartItems.map(item => ({
-              project_id: item.project_id,
-              amount:     item.amount,
-            })),
-          };
+      const body: any = {
+        items: cartItems.map(item => ({
+          project_id: item.project_id,
+          amount:     item.amount,
+        })),
+        ...(isGift && {
+          is_gift:              true,
+          gift_recipient_name:  giftName,
+          gift_recipient_phone: giftPhone,
+          gift_message:         giftMessage,
+        }),
+      };
+
+      if (!user) {
+        body.donor_name  = form.donor_name || "فاعل خير";
+        body.donor_phone = form.donor_phone;
+      }
 
       await apiClient.post("donations", body);
 
-      // أرسل event لتحديث شريط التقدم
       cartItems.forEach(item => {
         window.dispatchEvent(new CustomEvent("donation-success", {
-          detail: {
-            project_id: item.project_id,
-            amount:     item.amount,
-          }
+          detail: { project_id: item.project_id, amount: item.amount }
         }));
       });
 
@@ -138,10 +125,7 @@ function CheckoutForm() {
             <div className="space-y-4 mb-6">
               <div className="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-2xl p-4">
                 <p className="text-sm text-blue-700">سجّل دخولك لحفظ سجل تبرعاتك</p>
-                <Link
-                  href="/login"
-                  className="flex items-center gap-1 text-sm font-bold text-[#009689] whitespace-nowrap"
-                >
+                <Link href="/login" className="flex items-center gap-1 text-sm font-bold text-[#009689] whitespace-nowrap">
                   <LogIn size={16} />
                   دخول
                 </Link>
@@ -162,16 +146,82 @@ function CheckoutForm() {
             </div>
           )}
 
+          {/* ── زر الإهداء ── */}
+          <div className="mb-6">
+            <button
+              type="button"
+              onClick={() => setIsGift(!isGift)}
+              className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border-2 transition-all font-bold text-sm ${
+                isGift
+                  ? 'border-[#009689] bg-[#009689]/5 text-[#009689]'
+                  : 'border-gray-100 bg-gray-50 text-gray-500 hover:border-[#009689]/40'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <Gift size={18} className={isGift ? 'text-[#009689]' : 'text-gray-400'} />
+                <span>إهداء التبرع</span>
+              </div>
+              <ChevronDown
+                size={18}
+                className={`transition-transform duration-300 ${isGift ? 'rotate-180 text-[#009689]' : 'text-gray-400'}`}
+              />
+            </button>
+
+            {/* فورم الإهداء المنسدل */}
+            <div className={`overflow-hidden transition-all duration-300 ${isGift ? 'max-h-96 mt-3' : 'max-h-0'}`}>
+              <div className="bg-[#009689]/5 border border-[#009689]/20 rounded-xl p-4 space-y-3">
+
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1 font-medium">
+                    اسم المُهدى إليه <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={giftName}
+                    onChange={e => setGiftName(e.target.value)}
+                    placeholder="أدخل الاسم"
+                    className="w-full border border-gray-200 focus:border-[#009689] bg-white rounded-lg px-3 py-2 text-sm text-black outline-none transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1 font-medium">
+                    رقم هاتف المُهدى إليه <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="tel"
+                    value={giftPhone}
+                    onChange={e => setGiftPhone(e.target.value)}
+                    placeholder="05xxxxxxxx"
+                    className="w-full border border-gray-200 focus:border-[#009689] bg-white rounded-lg px-3 py-2 text-sm text-black outline-none transition-all"
+                    dir="ltr"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1 font-medium">
+                    رسالة الإهداء (اختياري)
+                  </label>
+                  <textarea
+                    value={giftMessage}
+                    onChange={e => setGiftMessage(e.target.value)}
+                    placeholder="اكتب رسالتك هنا..."
+                    rows={3}
+                    className="w-full border border-gray-200 focus:border-[#009689] bg-white rounded-lg px-3 py-2 text-sm text-black outline-none transition-all resize-none"
+                  />
+                </div>
+
+              </div>
+            </div>
+          </div>
+
           <form onSubmit={handleSubmit}>
             <button
               type="submit"
               disabled={loading}
               className="w-full bg-[#009689] text-white py-5 rounded-2xl font-bold flex justify-center items-center gap-2 disabled:opacity-60"
             >
-              {loading
-                ? <Loader2 className="animate-spin" size={20} />
-                : <ShieldCheck size={20} />
-              }
+              {loading ? <Loader2 className="animate-spin" size={20} /> : <ShieldCheck size={20} />}
               تأكيد التبرع بمبلغ {amountFromUrl} ر.س
             </button>
           </form>

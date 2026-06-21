@@ -94,8 +94,8 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
                 </div>
                 <p className="text-left text-sm font-bold text-[#009689] mt-2">{percentage}%</p>
               </div>
+              
             )}
-
             {project.content && (
               <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                 <h2 className="text-xl font-black text-gray-900 mb-4">تفاصيل المشروع</h2>

@@ -64,7 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     document.cookie = "token=; max-age=0; path=/";
-    router.push("/login");
+    router.push("/https://demo-shamel.tmt3.sa/");
   };
 
   return (
