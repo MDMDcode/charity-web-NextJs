@@ -153,16 +153,14 @@ export default function CartPage() {
             </div>
           ) : (
             <div className="p-6">
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto ">
                 <table className="w-full border-collapse text-right text-sm">
                   <thead>
                     <tr className="bg-[#E6F0F0] text-[#009689] font-bold text-xs">
                       <th className="p-4 rounded-r-xl">الصورة</th>
                       <th className="p-4">المشروع</th>
                       <th className="p-4 text-center">المبلغ</th>
-                      <th className="p-4 text-center">الكمية</th>
-                      <th className="p-4 text-center">الإجمالي</th>
-                      <th className="p-4 text-center rounded-l-xl">الخيارات</th>
+                      <th className="p-4 text-center rounded-l-xl">حذف</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-50 text-slate-700">
@@ -179,14 +177,6 @@ export default function CartPage() {
                         </td>
                         <td className="p-4 font-bold text-slate-900 max-w-xs">{item.title}</td>
                         <td className="p-4 text-center font-bold text-gray-400 whitespace-nowrap">
-                          {item.amount.toLocaleString("ar-SA")} ر.س
-                        </td>
-                        <td className="p-4 text-center w-24">
-                          <div className="inline-block bg-gray-50 border border-gray-100 rounded-xl px-4 py-2 font-bold text-slate-800 text-sm">
-                            1
-                          </div>
-                        </td>
-                        <td className="p-4 text-center font-black text-[#009689] whitespace-nowrap">
                           {item.amount.toLocaleString("ar-SA")} ر.س
                         </td>
                         <td className="p-4 text-center w-16">

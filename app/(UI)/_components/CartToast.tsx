@@ -16,7 +16,6 @@ export default function CartToast({ show, onClose, product }: CartToastProps) {
   useEffect(() => {
     if (show) {
       setProgress(100);
-      // تقليل شريط التقدم كل 50 ملي ثانية ليختفي خلال 4 ثوانٍ
       const timer = setInterval(() => {
         setProgress((prev) => (prev > 0 ? prev - 1.25 : 0));
       }, 50);
@@ -79,7 +78,7 @@ export default function CartToast({ show, onClose, product }: CartToastProps) {
             </button>
             <button 
               onClick={() => router.push("/checkout")}
-              className="flex-1 flex items-center justify-center gap-2 bg-[#1e4a1e] text-white py-3 rounded-xl font-bold hover:bg-[#2a5a2a] transition-all text-sm"
+              className="flex-1 flex items-center justify-center gap-2 bg-[#009689] text-white py-3 rounded-xl font-bold hover:bg-[#2a5a2a] transition-all text-sm"
             >
                إتمام التبرع <CreditCard size={18} />
             </button>

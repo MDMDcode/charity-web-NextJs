@@ -85,6 +85,7 @@ function CheckoutForm() {
       });
 
       localStorage.removeItem("tmt_cart");
+      window.dispatchEvent(new Event("cart-updated"));
       setIsSuccess(true);
 
     } catch {

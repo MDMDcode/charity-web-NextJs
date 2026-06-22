@@ -42,7 +42,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
           <div className="flex items-center gap-2 text-white/70 text-sm mb-4">
             <Link href="/" className="hover:text-white transition">الرئيسية</Link>
             <span>/</span>
-            <Link href="/projects" className="hover:text-white transition">المشاريع</Link>
+            <Link href="/store" className="hover:text-white transition">المشاريع</Link>
             <span>/</span>
             <span className="text-white">{project.title}</span>
           </div>

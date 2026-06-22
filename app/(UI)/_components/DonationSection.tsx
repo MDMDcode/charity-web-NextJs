@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Share2, Check } from "lucide-react";
+import CartToast from "./CartToast";
 
 export default function DonationSection({ project }: { project: any }) {
   const router  = useRouter();
@@ -12,6 +13,13 @@ export default function DonationSection({ project }: { project: any }) {
   const [amount,        setAmount]        = useState<number | string>(pricing?.suggested_amount || "");
   const [selectedShare, setSelectedShare] = useState<any>(null);
   const [copied,        setCopied]        = useState(false);
+  const [showToast,     setShowToast]     = useState(false);
+  const [toastError,    setToastError]    = useState(false); // 👈
+
+  const showError = () => {
+    setToastError(true);
+    setTimeout(() => setToastError(false), 3000);
+  };
 
   const handleSelectShare = (share: any) => {
     setSelectedShare(share);
@@ -22,11 +30,7 @@ export default function DonationSection({ project }: { project: any }) {
     const url = window.location.href;
     try {
       if (navigator.share) {
-        await navigator.share({
-          title: project.title,
-          text:  `ساهم معنا في: ${project.title}`,
-          url,
-        });
+        await navigator.share({ title: project.title, text: `ساهم معنا في: ${project.title}`, url });
       } else {
         await navigator.clipboard.writeText(url);
         setCopied(true);
@@ -36,7 +40,7 @@ export default function DonationSection({ project }: { project: any }) {
   };
 
   const handleDonateNow = () => {
-    if (!amount || Number(amount) < 1) return alert("يرجى إدخال مبلغ صحيح");
+    if (!amount || Number(amount) < 1) return showError(); // 👈
     const directDonation = [{
       project_id: project.id,
       title:      project.title,
@@ -48,7 +52,7 @@ export default function DonationSection({ project }: { project: any }) {
   };
 
   const handleAddToCart = () => {
-    if (!amount || Number(amount) < 1) return alert("يرجى إدخال مبلغ صحيح");
+    if (!amount || Number(amount) < 1) return showError(); // 👈
     const cart = JSON.parse(localStorage.getItem("tmt_cart") || "[]");
     const existingIndex = cart.findIndex((item: any) => item.project_id === project.id);
     if (existingIndex > -1) {
@@ -63,11 +67,36 @@ export default function DonationSection({ project }: { project: any }) {
     }
     localStorage.setItem("tmt_cart", JSON.stringify(cart));
     window.dispatchEvent(new Event("cart-updated"));
-    alert("تمت الإضافة إلى السلة");
+    setShowToast(true);
   };
 
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 sticky top-6">
+
+      {/* Toast نجاح */}
+      <CartToast
+        show={showToast}
+        onClose={() => setShowToast(false)}
+        product={{
+          title:  project.title,
+          image:  project.image_url,
+          amount: Number(amount),
+        }}
+      />
+
+      {/* Toast خطأ 👈 */}
+      {toastError && (
+        <div
+          dir="rtl"
+          className="fixed top-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-red-50 border border-red-200 text-red-700 px-5 py-3 rounded-2xl shadow-lg animate-fade-in"
+        >
+          <svg className="w-5 h-5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+          </svg>
+          <span className="font-bold text-sm">يرجى إدخال مبلغ صحيح</span>
+        </div>
+      )}
+
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-xl font-black text-gray-900">تبرع الآن</h3>
         <button
@@ -80,7 +109,6 @@ export default function DonationSection({ project }: { project: any }) {
         </button>
       </div>
 
-      {/* أسهم ثابتة */}
       {pricing?.has_shares && shares.length > 0 && (
         <div className="mb-6">
           <p className="text-sm text-gray-500 mb-3 font-medium">اختر نوع المساهمة</p>
@@ -103,12 +131,9 @@ export default function DonationSection({ project }: { project: any }) {
         </div>
       )}
 
-      {/* حقل المبلغ */}
       {(pricing?.is_open_price || !pricing?.has_shares) && (
         <div className="mb-6">
-          <label className="block text-sm text-gray-500 mb-2 font-medium">
-            أدخل مبلغ المساهمة
-          </label>
+          <label className="block text-sm text-gray-500 mb-2 font-medium">أدخل مبلغ المساهمة</label>
           <div className="relative">
             <input
               type="number"
@@ -118,19 +143,14 @@ export default function DonationSection({ project }: { project: any }) {
               className="w-full border-2 border-gray-100 focus:border-[#009689] bg-gray-50 focus:bg-white rounded-xl px-4 py-3 text-center text-2xl font-black text-black outline-none transition-all placeholder:text-black/30 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               placeholder="0.00"
             />
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm font-bold">
-              ر.س
-            </span>
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm font-bold">ر.س</span>
           </div>
           {pricing?.min_price && (
-            <p className="text-xs text-gray-400 mt-1 text-center">
-              الحد الأدنى: {pricing.min_price} ر.س
-            </p>
+            <p className="text-xs text-gray-400 mt-1 text-center">الحد الأدنى: {pricing.min_price} ر.س</p>
           )}
         </div>
       )}
 
-      {/* المبلغ المحدد من الأسهم */}
       {pricing?.has_shares && !pricing?.is_open_price && selectedShare && (
         <div className="mb-6 p-3 bg-[#009689]/5 rounded-xl border border-[#009689]/20">
           <p className="text-center text-sm text-gray-500">المبلغ المحدد</p>
@@ -138,7 +158,6 @@ export default function DonationSection({ project }: { project: any }) {
         </div>
       )}
 
-      {/* الأزرار */}
       <div className="flex gap-2">
         <button
           onClick={handleAddToCart}
@@ -156,6 +175,7 @@ export default function DonationSection({ project }: { project: any }) {
           تبرع الآن
         </button>
       </div>
+
     </div>
   );
 }
