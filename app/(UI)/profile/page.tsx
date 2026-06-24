@@ -91,7 +91,7 @@ export default function ProfilePage() {
 
         {/* سجل التبرعات */}
         <div className="bg-white rounded-3xl border shadow-sm p-8">
-          <h2 className="text-xl font-black mb-6">سجل التبرعات</h2>
+          <h2 className="text-xl text-black font-black mb-6">سجل التبرعات</h2>
 
           {donateLoading ? (
             <div className="flex justify-center py-8">
