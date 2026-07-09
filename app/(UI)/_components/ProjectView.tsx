@@ -1,42 +1,13 @@
 import Link from "next/link";
 import DonationSection from "@/app/(UI)/_components/DonationSection";
 
-const API = "https://api-shamel.tmt3.sa/api/v1";
-
-async function getProject(id: string) {
-  try {
-    const res = await fetch(`${API}/projects/${id}`, { cache: 'no-store' });
-    const json = await res.json();
-    return json?.data || null;
-  } catch (e) {
-    console.error(e);
-    return null;
-  }
-}
-
-export default async function ProjectPage({
-  params,
-  searchParams,
+export default function ProjectView({
+  project,
+  isMarketerLanding = false,
 }: {
-  params: Promise<{ id: string }>;
-  searchParams: Promise<{ ref?: string }>;
+  project: any;
+  isMarketerLanding?: boolean;
 }) {
-  const { id } = await params;
-  const { ref } = await searchParams;
-  const project = await getProject(id);
-  const isMarketerLanding = ref === "marketer";
-
-  if (!project) {
-    return (
-      <main dir="rtl" className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-400 text-xl mb-4">المشروع غير موجود</p>
-          <Link href="/" className="text-[#009689] font-bold">العودة للرئيسية</Link>
-        </div>
-      </main>
-    );
-  }
-
   const goal       = Number(project.target?.goal_amount) || 0;
   const collected  = Number(project.target?.collected_amount) || 0;
   const percentage = goal > 0 ? Math.min(Math.round((collected / goal) * 100), 100) : 0;
@@ -46,7 +17,6 @@ export default async function ProjectPage({
 
       <section className="bg-[#009689] py-12">
         <div className="max-w-5xl mx-auto px-6">
-          {/* إخفاء شريط الفتات (Breadcrumb) بالكامل لزائر المسوق */}
           {!isMarketerLanding && (
             <div className="flex items-center gap-2 text-white/70 text-sm mb-4">
               <Link href="/" className="hover:text-white transition">الرئيسية</Link>

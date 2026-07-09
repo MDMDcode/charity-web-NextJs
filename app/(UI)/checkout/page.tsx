@@ -1,11 +1,17 @@
 "use client";
-
 import { useSearchParams } from 'next/navigation';
 import { useState, useEffect, Suspense } from 'react';
 import { CheckCircle2, ShieldCheck, Loader2, User, LogIn, Gift, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import apiClient from "@/app/lib/api";
 import { useAuth } from "@/app/context/AuthContext";
+
+// دالة قراءة كوكي المسوق
+function getMarketerCookie(): string | null {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie.match(/(?:^|;\s*)marketer_campaign_id=([^;]*)/);
+  return match ? decodeURIComponent(match[1]) : null;
+}
 
 function SuccessView({ name }: { name: string }) {
   return (
@@ -38,15 +44,17 @@ function CheckoutForm() {
   const [loading,   setLoading]   = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  // حالة الإهداء
   const [isGift,      setIsGift]      = useState(false);
   const [giftName,    setGiftName]    = useState("");
   const [giftPhone,   setGiftPhone]   = useState("");
   const [giftMessage, setGiftMessage] = useState("");
 
-  useEffect(() => {
+useEffect(() => {
     const data = localStorage.getItem("tmt_cart");
     if (data) setCartItems(JSON.parse(data));
+
+    // 🔍 تشخيص مؤقت - يطبع تلقائياً بدون أي تدخل يدوي
+    alert("الكوكيز في صفحة الدفع: " + document.cookie);
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -58,11 +66,14 @@ function CheckoutForm() {
 
     setLoading(true);
     try {
+      const marketerCampaignId = getMarketerCookie();
+
       const body: any = {
         items: cartItems.map(item => ({
           project_id: item.project_id,
           amount:     item.amount,
         })),
+        marketer_campaign_id: marketerCampaignId || null, // 👈 على مستوى الـ body الرئيسي
         ...(isGift && {
           is_gift:              true,
           gift_recipient_name:  giftName,
@@ -107,7 +118,6 @@ function CheckoutForm() {
     <main className="min-h-screen bg-[#F8FAFB] py-12 px-4" dir="rtl">
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
 
-        {/* نموذج البيانات */}
         <div className="lg:col-span-7 bg-white p-8 rounded-3xl border shadow-sm">
           <h2 className="text-xl font-black mb-6 text-black">بيانات المتبرع</h2>
 
@@ -147,7 +157,6 @@ function CheckoutForm() {
             </div>
           )}
 
-          {/* ── زر الإهداء ── */}
           <div className="mb-6">
             <button
               type="button"
@@ -168,7 +177,6 @@ function CheckoutForm() {
               />
             </button>
 
-            {/* فورم الإهداء المنسدل */}
             <div className={`overflow-hidden transition-all duration-300 ${isGift ? 'max-h-96 mt-3' : 'max-h-0'}`}>
               <div className="bg-[#009689]/5 border border-[#009689]/20 rounded-xl p-4 space-y-3">
 
@@ -228,7 +236,6 @@ function CheckoutForm() {
           </form>
         </div>
 
-        {/* ملخص السلة */}
         <div className="lg:col-span-5 bg-white p-6 rounded-3xl border shadow-sm h-fit">
           <h2 className="font-bold mb-4 border-b pb-2 text-black">محتويات السلة</h2>
           <div className="space-y-4">
